@@ -1,4 +1,4 @@
-# testing a change
+# testing a change again
 '''
 if self.powerup_state == "charging":
     display_center(screen, self.full_charge, (self.powerup_x, self.powerup_y))
