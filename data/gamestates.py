@@ -309,7 +309,7 @@ def game(character1, character2): # with scaled screen
     player2 = eval(character2 + "(2, \"keyboard\")")
 
 
-    player_names = ["testing_player_1", "europium_god"]
+    player_names = ["player 1", "player 2"]
 
     player1_name_text = Text(player_names[0], "font_10", BLACK, (NAME_X, NAME_Y))
     player2_name_text = Text(player_names[1], "font_10", BLACK, (WIDTH - NAME_X, NAME_Y))
@@ -323,7 +323,7 @@ def game(character1, character2): # with scaled screen
     '''
     All game states:
     playing - players are battling in a game
-    game_over - one players wins and game is over
+    round_over - one players wins and game is over
     '''
 
     run = True
@@ -385,14 +385,22 @@ def game(character1, character2): # with scaled screen
             player2_lose = player2.out_of_bounds()
 
             if player1_lose or player2_lose:
-                game_state = "game_over"
 
+                # assigning winning player
                 if player1_lose:
                     winning_player = 2
                 elif player2_lose:
                     winning_player = 1
 
-                game_over_text = MovingText(f"{player_names[winning_player - 1]} WINS!", "font_20", BLACK, (MID_X, MID_Y))
+                # assigning winning player moving texts
+                if player1.lives <= 0 or player2.lives <= 0:
+                    game_state = "match_over"
+                    match_over_text = MovingText(f"{player_names[winning_player - 1]} VICTORIOUS!!", "font_20", BLACK, (MID_X, MID_Y))
+                else:
+                    game_state = "round_over"
+                    round_over_text = MovingText(f"{player_names[winning_player - 1]} WINS!", "font_20", BLACK, (MID_X, MID_Y))
+
+
                 # -1 to account for 0 index
                 # game_over_text = MovingText("LONG LONG LONG LONG TEXT TEST", "font_20", BLACK, (MID_X, MID_Y))
                 # game_over_text = MovingText("SHORT", "font_20", BLACK, (MID_X, MID_Y))
@@ -411,14 +419,19 @@ def game(character1, character2): # with scaled screen
         player1.display_lives(screen)
         player2.display_lives(screen)
 
-        if game_state == "game_over":
-            game_over_text.display_text(screen)
+        if game_state == "round_over":
+            round_over_text.display_text(screen)
 
-            if game_over_text.is_finished():
+            if round_over_text.is_finished():
                 game_state = "playing"
 
                 player1.reset()
                 player2.reset()
+        elif game_state == "match_over":
+            match_over_text.display_text(screen)
+
+            if match_over_text.is_finished():
+                break
 
         # ------------- usual commands -------------
         if key[pygame.K_ESCAPE]:
