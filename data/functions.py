@@ -11,9 +11,39 @@ def sgn(x):
     return 1
 
 # display
-def display_center(screen, surf, coordinates): # surf is usually an image
+def display_center(screen, surf, coordinates, special_flags = ""): # surf is usually an image
     surf_rect = surf.get_rect(center = coordinates)
-    screen.blit(surf, surf_rect)
+
+    if special_flags:
+        screen.blit(surf, surf_rect, special_flags = special_flags)
+    else:
+        screen.blit(surf, surf_rect)
+
+def circle_surf(radius, colour):
+    surf = pygame.Surface((radius * 2, radius * 2))
+    pygame.draw.circle(surf, colour, (radius, radius), radius)
+    surf.set_colorkey((0, 0, 0))
+    return surf
+
+def glow_surf(min_radius, max_radius, total_circles, in_colour, out_colour):
+    surf = pygame.Surface((max_radius * 2, max_radius * 2))
+
+    # if (max_radius - min_radius) % radius_interval != 0: # check if number of glows is a whole number
+    #     assert False
+
+    radius_interval = (max_radius - min_radius) // total_circles
+
+    colour_diff = [in_colour[i] - out_colour[i] for i in range(3)]
+
+    curr_radius = max_radius
+
+    for count in range(total_circles):
+        curr_radius -= radius_interval
+        curr_colour = tuple(out_colour[i] + colour_diff[i] * count / total_circles for i in range(3))
+        display_center(surf, circle_surf(curr_radius, curr_colour), (max_radius, max_radius))
+        print(count, curr_radius, curr_colour)
+
+    return surf
 
 # font
 def display_font_center(screen, text, font_name, colour, coordinates):

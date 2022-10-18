@@ -164,7 +164,7 @@ class Standard():
                 self.angle += 180
 
         # updating image
-        # 180 is acts as flipping the image since the image points down when uploading
+        # 180 is acdded as flipping the image since the image points down when uploading
         if self.animate:
             self.image = pygame.transform.rotate(self.idle_animation.current_frame(), self.angle + 180) # counter clockwise rotation
         else:

@@ -103,12 +103,13 @@ def character_selection():
 
     for i in range(num_characters):
         card_image = image("selection/cards/card_" + character_names[i] + ".png")
-        character_name_surf = Text(character_names[i], "font_10", SILVER, (position_x, position_y - 115))
+        # character_name_surf = Text(character_names[i], "font_10", SILVER, (position_x, position_y - 115))
+        character_name_surf = Text(selection_surface, "font_10", SILVER, (position_x, position_y - 115), character_names[i])
 
         display_center(selection_surface, card_image, (position_x, position_y)) # card background
         display_center(selection_surface, character_images[i], (position_x, position_y - 69)) # character image
         display_center(selection_surface, character_powerup_images[i], (position_x - 48, position_y + 14)) # powerup icon
-        character_name_surf.display_text(selection_surface)
+        character_name_surf.display()
 
         position_x += spacing_x
 
@@ -291,6 +292,7 @@ def character_selection():
 
     return character_names[character_index_1], character_names[character_index_2]
 
+
 def game(character1, character2): # with scaled screen
     global fullscreen
 
@@ -311,8 +313,9 @@ def game(character1, character2): # with scaled screen
 
     player_names = ["player 1", "player 2"]
 
-    player1_name_text = Text(player_names[0], "font_10", BLACK, (NAME_X, NAME_Y))
-    player2_name_text = Text(player_names[1], "font_10", BLACK, (WIDTH - NAME_X, NAME_Y))
+    # player name texts
+    player1_name_text = Text(screen, "font_10", BLACK, (NAME_X, NAME_Y), player_names[0], display_method = "top_left")
+    player2_name_text = Text(screen, "font_10", BLACK, (WIDTH - NAME_X, NAME_Y), player_names[1], display_method = "top_right")
 
     consecutive_collisions = 0
     # variable to keep track of consecutive_collisions
@@ -326,8 +329,18 @@ def game(character1, character2): # with scaled screen
     round_over - one players wins and game is over
     '''
 
-    run = True
+    # generating glow surface
+    # red_glow = glow_surf(10, 100, 4, (143, 0, 11), (38, 0, 3))
+    # blue_glow = glow_surf(10, 100, 4, (69, 0, 62), (129, 3, 135))
+    # glow_surf = pygame.Surface((120, 120))
+    # display_center(glow_surf, circle_surf(60, (20, 20, 20)), (60, 60))
+    # display_center(glow_surf, circle_surf(50, (40, 40, 40)), (60, 60))
+    # display_center(glow_surf, circle_surf(40, (60, 60, 60)), (60, 60))
+    # display_center(glow_surf, circle_surf(30, (80, 80, 80)), (60, 60))
+    # display_center(glow_surf, circle_surf(20, (100, 100, 100)), (60, 60))
+    # display_center(glow_surf, circle_surf(10, (120, 120, 120)), (60, 60))
 
+    run = True
 
     while run:
         # ------------- usual commands -------------
@@ -338,8 +351,9 @@ def game(character1, character2): # with scaled screen
 
         # ------------- main code start -------------
 
-        pygame.draw.circle(screen, (50, 90, 168), (MID_X, MID_Y), HEIGHT // 2 + 10)
-        pygame.draw.circle(screen, (142, 241, 250), (MID_X, MID_Y), HEIGHT // 2)
+        pygame.draw.circle(screen, (50, 90, 168), (MID_X, MID_Y), HEIGHT // 2 + 10) # inner circle
+        pygame.draw.circle(screen, (142, 241, 250), (MID_X, MID_Y), HEIGHT // 2) # outer circle
+
 
         if game_state == "playing":
 
@@ -354,10 +368,6 @@ def game(character1, character2): # with scaled screen
 
                 player2.x -= player2.dx
                 player2.y -= player2.dy
-
-                # swap player dx and dy
-                player1.dx, player2.dx = player2.dx, player1.dx
-                player1.dy, player2.dy = player2.dy, player1.dy
                 '''
 
                 player1.x -= player1.dx
@@ -369,8 +379,54 @@ def game(character1, character2): # with scaled screen
                 player1.dx, player2.dx = collision_physics(player1.dx, player1.mass, player2.dx, player2.mass)
                 player1.dy, player2.dy = collision_physics(player1.dy, player1.mass, player2.dy, player2.mass)
 
-
                 consecutive_collisions += 1
+
+                if consecutive_collisions >= 2:
+                    print(f"ORIGINAL player 1 x = {player1.x}, y = {player1.y}")
+                    print(f"ORIGINAL player 2 x = {player2.x}, y = {player2.y}")
+
+                    # calculating intersection of line and circle
+                    gradient = (player1.y - player2.y) / (player1.x - player2.x)
+
+                    # calculating first intersection coordinates
+                    diff_x1 = math.sqrt((player1.radius ** 2) / (1 + (gradient ** 2)))
+                    intersection_x1 = player1.x + diff_x1
+
+                    print(f"ORIGINAL intersection x1 = {intersection_x1}")
+
+                    if intersection_x1 < min(player1.x, player2.x) or intersection_x1 > max(player1.x, player2.x):
+                        intersection_x1 = player1.x - diff_x1
+
+                    print(f"FINAL intersection x1 = {intersection_x1}")
+
+                    intersection_y1 = gradient * intersection_x1
+
+                    # calculating second intersection coordinates
+                    diff_x2 = math.sqrt((player2.radius ** 2) / (1 + (gradient ** 2)))
+                    intersection_x2 = player2.x + diff_x2
+
+                    print(f"ORIGINAL intersection x2 = {intersection_x2}")
+
+                    if intersection_x2 < min(player1.x, player2.x) or intersection_x2 > max(player1.x, player2.x):
+                        intersection_x2 = player2.x - diff_x2
+
+                    intersection_y2 = gradient * intersection_x2
+
+                    print(f"FINAL intersection x2 = {intersection_x2}")
+                    # calculating midpoint of intersections
+
+                    mid_point_x = (intersection_x1 + intersection_x2) / 2
+                    mid_point_y = (intersection_y1 + intersection_y2) / 2
+
+                    player1.x += mid_point_x - intersection_x1
+                    player1.y += mid_point_y - intersection_y1
+
+                    player2.x += mid_point_x - intersection_x2
+                    player2.y += mid_point_y - intersection_y2
+
+                    print(f"FINAL player 1 x = {player1.x}, y = {player1.y}")
+                    print(f"FINAL player 2 x = {player2.x}, y = {player2.y}")
+                    print('\n')
             else:
                 consecutive_collisions = 0
 
@@ -384,6 +440,7 @@ def game(character1, character2): # with scaled screen
             player1_lose = player1.out_of_bounds()
             player2_lose = player2.out_of_bounds()
 
+            # updating game state based on loss
             if player1_lose or player2_lose:
 
                 # assigning winning player
@@ -395,40 +452,44 @@ def game(character1, character2): # with scaled screen
                 # assigning winning player moving texts
                 if player1.lives <= 0 or player2.lives <= 0:
                     game_state = "match_over"
-                    match_over_text = MovingText(f"{player_names[winning_player - 1]} VICTORIOUS!!", "font_20", BLACK, (MID_X, MID_Y))
+                    match_over_text = MovingText(screen, "font_20", BLACK, (MID_X, MID_Y), f"{player_names[winning_player - 1]} VICTORIOUS!!")
                 else:
                     game_state = "round_over"
-                    round_over_text = MovingText(f"{player_names[winning_player - 1]} WINS!", "font_20", BLACK, (MID_X, MID_Y))
-
-
+                    round_over_text = MovingText(screen, "font_20", BLACK, (MID_X, MID_Y), f"{player_names[winning_player - 1]} WINS!")
                 # -1 to account for 0 index
-                # game_over_text = MovingText("LONG LONG LONG LONG TEXT TEST", "font_20", BLACK, (MID_X, MID_Y))
-                # game_over_text = MovingText("SHORT", "font_20", BLACK, (MID_X, MID_Y))
 
 
-
-        player1_name_text.display_top_left(screen)
-        player2_name_text.display_top_right(screen)
+        player1_name_text.display()
+        player2_name_text.display()
 
         player1.powerup_display(screen)
         player2.powerup_display(screen)
 
+
         player1.display(screen)
         player2.display(screen)
+
+        #display_center(screen, red_glow, (player1.x, player1.y), special_flags = BLEND_RGB_ADD)
+        #display_center(screen, blue_glow, (player2.x, player2.y), special_flags = BLEND_RGB_ADD)
 
         player1.display_lives(screen)
         player2.display_lives(screen)
 
+
+        # pygame.draw.circle(screen, (255, 74, 213), (MID_X, MID_Y), 50, special_flags = BLEND_RGB_ADD)
+
+
         if game_state == "round_over":
-            round_over_text.display_text(screen)
+            round_over_text.display()
 
             if round_over_text.is_finished():
                 game_state = "playing"
 
                 player1.reset()
                 player2.reset()
+
         elif game_state == "match_over":
-            match_over_text.display_text(screen)
+            match_over_text.display()
 
             if match_over_text.is_finished():
                 break

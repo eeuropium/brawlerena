@@ -1,5 +1,53 @@
 # testing a change again
 '''
+class Text():
+    def __init__(self, text, font_name, colour, coordinates):
+        font = eval(font_name)
+        font_size = int(font_name.split('_')[1])
+        lines = list(text.split('\n'))
+
+        self.coordinates = coordinates
+
+        self.text_surfaces = []
+
+        self.width, self.height = 0, 0
+
+        for line in lines:
+            text = font.render(line, False, colour)
+            self.text_surfaces.append((text, self.height))
+
+            self.width = max(self.width, text.get_width())
+            self.height += font_size * 1.6
+
+        self.height -= font_size * 0.6 # remove extra empty space at bottom
+
+        if colour != WHITE:
+            fill_surf_colour = WHITE
+        else:
+            fill_surf_colour = BLACK
+
+        self.final_text_surface = pygame.Surface((self.width, self.height)) # surface which contains all the texts
+        self.final_text_surface.fill(fill_surf_colour)
+
+        for text, h in self.text_surfaces:
+            # width // 2 for centering
+            # h + half of font size for centering
+            display_center(self.final_text_surface, text, (self.width // 2, h + font_size // 2))
+            # recommended line break value font_size timesvalue between 1.4 to 1.8
+
+        self.final_text_surface.set_colorkey(fill_surf_colour)
+
+    def display_text(self, screen):
+        display_center(screen, self.final_text_surface, self.coordinates)
+
+    def display_top_left(self, screen):
+        screen.blit(self.final_text_surface, self.coordinates)
+
+    def display_top_right(self, screen):
+        screen.blit(self.final_text_surface, (self.coordinates[0] - self.width, self.coordinates[1]))
+'''
+
+'''
 if self.powerup_state == "charging":
     display_center(screen, self.full_charge, (self.powerup_x, self.powerup_y))
     display_center(screen, self.powerup_shade_right, (self.powerup_x, self.powerup_y)) # turning shade
