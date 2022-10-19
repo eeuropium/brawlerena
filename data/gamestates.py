@@ -390,12 +390,16 @@ def game(character1, character2): # with scaled screen
 
                     # calculating first intersection coordinates
                     diff_x1 = math.sqrt((player1.radius ** 2) / (1 + (gradient ** 2)))
-                    intersection_x1 = player1.x + diff_x1
+
+                    if player1.x < player2.x:
+                        intersection_x1 = player1.x + diff_x1
+                    else:
+                        intersection_x1 = player1.x - diff_x1
 
                     print(f"ORIGINAL intersection x1 = {intersection_x1}")
 
-                    if intersection_x1 < min(player1.x, player2.x) or intersection_x1 > max(player1.x, player2.x):
-                        intersection_x1 = player1.x - diff_x1
+                    # if intersection_x1 < min(player1.x, player2.x) or intersection_x1 > max(player1.x, player2.x):
+                    #     intersection_x1 = player1.x - diff_x1
 
                     print(f"FINAL intersection x1 = {intersection_x1}")
 
@@ -403,12 +407,17 @@ def game(character1, character2): # with scaled screen
 
                     # calculating second intersection coordinates
                     diff_x2 = math.sqrt((player2.radius ** 2) / (1 + (gradient ** 2)))
-                    intersection_x2 = player2.x + diff_x2
+
+                    # intersection_x2 = player2.x + diff_x2
+
+                    if player2.x < player1.x:
+                        intersection_x2 = player2.x + diff_x2
+                    else:
+                        intersection_x2 = player2.x - diff_x2
 
                     print(f"ORIGINAL intersection x2 = {intersection_x2}")
-
-                    if intersection_x2 < min(player1.x, player2.x) or intersection_x2 > max(player1.x, player2.x):
-                        intersection_x2 = player2.x - diff_x2
+                    # if intersection_x2 < min(player1.x, player2.x) or intersection_x2 > max(player1.x, player2.x):
+                    #     intersection_x2 = player2.x - diff_x2
 
                     intersection_y2 = gradient * intersection_x2
 
