@@ -314,8 +314,8 @@ def game(character1, character2): # with scaled screen
     player_names = ["player 1", "player 2"]
 
     # player name texts
-    player1_name_text = Text(screen, "font_10", BLACK, (NAME_X, NAME_Y), player_names[0], display_method = "top_left")
-    player2_name_text = Text(screen, "font_10", BLACK, (WIDTH - NAME_X, NAME_Y), player_names[1], display_method = "top_right")
+    player1_name_text = Text(screen, "font_10", PLAYER_BLUE, (NAME_X, NAME_Y), player_names[0], display_method = "top_left")
+    player2_name_text = Text(screen, "font_10", PLAYER_RED, (WIDTH - NAME_X, NAME_Y), player_names[1], display_method = "top_right")
 
     consecutive_collisions = 0
     # variable to keep track of consecutive_collisions
@@ -382,13 +382,10 @@ def game(character1, character2): # with scaled screen
                 consecutive_collisions += 1
 
                 if consecutive_collisions >= 2:
-                    print(f"ORIGINAL player 1 x = {player1.x}, y = {player1.y}")
-                    print(f"ORIGINAL player 2 x = {player2.x}, y = {player2.y}")
-
                     # calculating intersection of line and circle
                     gradient = (player1.y - player2.y) / (player1.x - player2.x)
 
-                    # calculating first intersection coordinates
+                    # calculating first intersection coordinates, using player 1 coordinates as origin
                     diff_x1 = math.sqrt((player1.radius ** 2) / (1 + (gradient ** 2)))
 
                     if player1.x < player2.x:
@@ -396,46 +393,28 @@ def game(character1, character2): # with scaled screen
                     else:
                         intersection_x1 = player1.x - diff_x1
 
-                    print(f"ORIGINAL intersection x1 = {intersection_x1}")
-
-                    # if intersection_x1 < min(player1.x, player2.x) or intersection_x1 > max(player1.x, player2.x):
-                    #     intersection_x1 = player1.x - diff_x1
-
-                    print(f"FINAL intersection x1 = {intersection_x1}")
-
                     intersection_y1 = gradient * intersection_x1
 
-                    # calculating second intersection coordinates
+                    # calculating second intersection coordinates, using player 2 coordinates as origin
                     diff_x2 = math.sqrt((player2.radius ** 2) / (1 + (gradient ** 2)))
-
-                    # intersection_x2 = player2.x + diff_x2
 
                     if player2.x < player1.x:
                         intersection_x2 = player2.x + diff_x2
                     else:
                         intersection_x2 = player2.x - diff_x2
 
-                    print(f"ORIGINAL intersection x2 = {intersection_x2}")
-                    # if intersection_x2 < min(player1.x, player2.x) or intersection_x2 > max(player1.x, player2.x):
-                    #     intersection_x2 = player2.x - diff_x2
-
                     intersection_y2 = gradient * intersection_x2
 
-                    print(f"FINAL intersection x2 = {intersection_x2}")
                     # calculating midpoint of intersections
-
                     mid_point_x = (intersection_x1 + intersection_x2) / 2
                     mid_point_y = (intersection_y1 + intersection_y2) / 2
 
+                    # updating the player coordinates
                     player1.x += mid_point_x - intersection_x1
                     player1.y += mid_point_y - intersection_y1
 
                     player2.x += mid_point_x - intersection_x2
                     player2.y += mid_point_y - intersection_y2
-
-                    print(f"FINAL player 1 x = {player1.x}, y = {player1.y}")
-                    print(f"FINAL player 2 x = {player2.x}, y = {player2.y}")
-                    print('\n')
             else:
                 consecutive_collisions = 0
 

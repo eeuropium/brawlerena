@@ -44,6 +44,8 @@ class Standard():
             self.lives_x, self.lives_y = LIVES_X, LIVES_Y # coordiantes of first heart shape
             self.lives_spacing = LIVES_SPACING # distance apart for heart shapes
 
+            self.outline_colour = PLAYER_BLUE
+
         elif player_number == 2:
             self.org_x = MID_X + START_POSITION_X_OFFSET
             self.org_y = MID_Y
@@ -56,6 +58,8 @@ class Standard():
 
             self.lives_x, self.lives_y = WIDTH - LIVES_X, LIVES_Y # coordiantes of first heart shape
             self.lives_spacing = -LIVES_SPACING # distance apart for heart shapes
+
+            self.outline_colour = PLAYER_RED
 
         self.x = self.org_x
         self.y = self.org_y
@@ -171,7 +175,19 @@ class Standard():
             self.image = pygame.transform.rotate(self.org_image, self.angle + 180)
 
     def display(self, screen):
+        # displaying character
         display_center(screen, self.image, (self.x, self.y))
+
+        # creating outline
+        outline_surf = pygame.Surface((self.image.get_width(), self.image.get_height()))
+        outline_surf.set_colorkey(BLACK)
+
+        mask = pygame.mask.from_surface(self.image)
+
+        pygame.draw.lines(outline_surf, self.outline_colour, False, mask.outline(), 2)
+
+        # displaying outline
+        display_center(screen, outline_surf, (self.x, self.y))
 
     def reset(self):
         self.powerup_reset()

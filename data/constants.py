@@ -18,7 +18,7 @@ HEIGHT = 360
 MID_X = WIDTH // 2
 MID_Y = HEIGHT // 2
 
-# spcific positions / offsets -------------------------- #
+# specific positions / offsets -------------------------- #
 POWERUP_X = 50
 POWERUP_Y = MID_Y
 
@@ -30,7 +30,13 @@ NAME_X = 10
 NAME_Y = 50
 
 START_POSITION_X_OFFSET = 50
+
 # colours -------------------------- #
+'''
+Palletes:
+ENDESGA 32
+RESURRECT 64 PALETTE - https://lospec.com/palette-list/resurrect-64
+'''
 # general colours
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -40,8 +46,13 @@ BACKGROUND_COLOUR = (200, 255, 255)
 SILVER = (192, 203, 220)
 GREEN_SELECTED = (125, 255, 160)
 
+PLAYER_BLUE = (77, 101, 180)
+PLAYER_RED = (232, 59, 59)
+
 POWERUP_USE_COLOUR = (214, 0, 36)
 POWERUP_READY_COLOUR = (0, 255, 238)
 
+
+# fonts -------------------------- #
 font_20 = pygame.font.Font("data/PressStart2P.ttf", 20)
 font_10 = pygame.font.Font("data/PressStart2P.ttf", 10)
