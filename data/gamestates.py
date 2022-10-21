@@ -12,7 +12,7 @@ class Game():
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT)) # render width and height
 
         self.WINDOW_SIZE = (1280, 720) # scaled up window size
-        final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
+        self.final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
 
         self.full_screen = True
 
@@ -21,53 +21,73 @@ class Game():
 
         pygame.display.set_caption("brawlerena")
 
-    def test(): # with scaled self.screen
-        run = True
-        final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
+        icon_image = image("playing/characters/B79/character.png")
+        pygame.display.set_icon(icon_image)
 
+    def toggle_screen(self):
+        if self.full_screen:
+            self.final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
+            self.full_screen = False
+        else:
+            self.final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
+            self.full_screen = True
 
-        while run:
+    def settings_before(self, background_colour, last_time): # get dt, events and keys + updates last_time so dt can work
+        self.screen.fill(background_colour)
+
+        dt = time.time() - last_time
+        dt *= 30
+        last_time = time.time()
+
+        # inputs
+        events = pygame.event.get()
+        keys = pygame.key.get_pressed()
+
+        # mouse input
+        mouse_pos = pygame.mouse.get_pos()
+
+        return dt, events, keys, last_time, mouse_pos
+
+    def settings_after(self, events, keys, screen_key): # checks for usual commands eg escape and screen settings
+        if screen_key.is_pressed(keys):
+            self.toggle_screen()
+
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
+            sys.exit()
+
+        for event in events:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        self.final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
+
+        pygame.display.update()
+        self.clock.tick(FPS)
+
+    def test():
+        # common settings
+        last_time = time.time()
+        screen_key = AdvancedKey(pygame.K_EQUALS)
+
+        while True:
             # ------------- usual commands -------------
-            self.screen.fill((255, 255, 255))
-            events = pygame.event.get()
-            key = pygame.key.get_pressed()
+            dt, events, keys, last_time, mouse_pos = self.settings_before(BACKGROUND_COLOUR, last_time)
 
             # ------------- main code start -------------
 
 
             # ------------- usual commands -------------
-            if key[pygame.K_ESCAPE]:
-                final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
-                pygame.quit()
-                sys.exit()
-
-            if key[pygame.K_EQUALS]:
-                if self.full_screen:
-                    final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
-                    self.full_screen = False
-                else:
-                    final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
-                    self.full_screen = True
-
-            for event in events:
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-            final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
-
-            pygame.display.update()
-            self.clock.tick(FPS)
+            self.settings_after(events, keys, screen_key)
 
 
     def character_selection(self):
-        if self.full_screen:
-            final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
-        else:
-            final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
+        # common settings
+        last_time = time.time()
+        screen_key = AdvancedKey(pygame.K_EQUALS)
 
-        run = True
-
+        # getting character information
         character_names = ["GroundHog", "B79", "Jian", "Volta", "Metor"]
         character_images = [image("playing/characters/" + i + "/character.png") for i in character_names]
         character_powerup_images = [image("playing/characters/" + i + "/icon.png") for i in character_names]
@@ -81,18 +101,18 @@ class Game():
             "Metor": False
         }
 
+        # definining images and constants
         green_box_image = image("selection/other/green_box.png")
-        # card_image = image("playing/other/card.png")
 
         x_offset = 10 # x value offset from the middle
 
         spacing_x = 300 # spacing between characters
 
-        left_mid_x = MID_X // 2 - x_offset # midline for left player self.screen
+        left_mid_x = MID_X * 0.5 - x_offset # midline for left player self.screen
         right_mid_x = MID_X * 1.5 + x_offset
 
 
-        # selection_surface rendering---------------------------
+        # selection_surface rendering ---------------------------
         selection_surface = pygame.Surface((spacing_x * (num_characters - 1) + MID_X, HEIGHT))
 
         intermediate_colorkey = (255, 0, 242)
@@ -154,13 +174,13 @@ class Game():
 
         scroll_speed = 15
 
-        key_E = PressKey(pygame.K_e)
-        key_D = PressKey(pygame.K_d)
-        key_A = PressKey(pygame.K_a)
+        key_E = AdvancedKey(pygame.K_e)
+        key_D = AdvancedKey(pygame.K_d)
+        key_A = AdvancedKey(pygame.K_a)
 
-        key_slash = PressKey(pygame.K_SLASH)
-        key_right = PressKey(pygame.K_RIGHT)
-        key_left = PressKey(pygame.K_LEFT)
+        key_slash = AdvancedKey(pygame.K_SLASH)
+        key_right = AdvancedKey(pygame.K_RIGHT)
+        key_left = AdvancedKey(pygame.K_LEFT)
 
         character_index1 = 0 # character index for player 1
         character_index2 = 0 # character index for player 2
@@ -170,34 +190,32 @@ class Game():
 
         end_timer_started = False
 
-        while run:
+        while True:
             # ------------- usual commands -------------
-            self.screen.fill(BACKGROUND_COLOUR)
-            events = pygame.event.get()
-            key = pygame.key.get_pressed()
+            dt, events, keys, last_time, mouse_pos = self.settings_before(BACKGROUND_COLOUR, last_time)
 
             # ------------- main code start -------------
 
             # key handling for both players
 
             if not character_chosen_1:
-                if key_D.use_function(key):
+                if key_D.is_pressed(keys):
                     character_index1 += 1
 
-                if key_A.use_function(key):
+                if key_A.is_pressed(keys):
                     character_index1 -= 1
 
-            if key_E.use_function(key):
+            if key_E.is_pressed(keys):
                 character_chosen_1 = not character_chosen_1
 
             if not character_chosen_2:
-                if key_right.use_function(key):
+                if key_right.is_pressed(keys):
                     character_index2 += 1
 
-                if key_left.use_function(key):
+                if key_left.is_pressed(keys):
                     character_index2 -= 1
 
-            if key_slash.use_function(key):
+            if key_slash.is_pressed(keys):
                 character_chosen_2 = not character_chosen_2
 
             character_index1 %= num_characters
@@ -211,7 +229,7 @@ class Game():
 
             # for waiting one second after both players chose character
             if end_timer_started and end_timer.time_elapsed() > 1:
-                run = False
+                break
 
             # updating target x positions for both players
             subsurf_target_x1 = spacing_x * character_index1
@@ -278,38 +296,16 @@ class Game():
             display_center(self.screen, circle_surface_copy, (right_mid_x, MID_Y + 150))
 
             pygame.draw.rect(self.screen, BLACK, (MID_X - x_offset, 0, 2 * x_offset, HEIGHT))
+
             # ------------- usual commands -------------
-            if key[pygame.K_ESCAPE]:
-                final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
-                pygame.quit()
-                sys.exit()
-
-            if key[pygame.K_EQUALS]:
-                if self.full_screen:
-                    final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
-                    self.full_screen = False
-                else:
-                    final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
-                    self.full_screen = True
-
-            for event in events:
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-            final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
-
-            pygame.display.update()
-            self.clock.tick(FPS)
+            self.settings_after(events, keys, screen_key)
 
         return character_names[character_index1], character_names[character_index2]
 
-
-    def fighting(self, character1, character2): # with scaled self.screen
-        if self.full_screen:
-            final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
-        else:
-            final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
+    def fighting(self, character1, character2):
+        # common settings
+        last_time = time.time()
+        screen_key = AdvancedKey(pygame.K_EQUALS)
 
         joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
 
@@ -350,14 +346,9 @@ class Game():
         # display_center(glow_surf, circle_surf(20, (100, 100, 100)), (60, 60))
         # display_center(glow_surf, circle_surf(10, (120, 120, 120)), (60, 60))
 
-        run = True
-
-        while run:
+        while True:
             # ------------- usual commands -------------
-            # self.screen.fill((255, 255, 255))
-            self.screen.fill(BACKGROUND_COLOUR)
-            events = pygame.event.get()
-            key = pygame.key.get_pressed()
+            dt, events, keys, last_time, mouse_pos = self.settings_before(BACKGROUND_COLOUR, last_time)
 
             # ------------- main code start -------------
 
@@ -428,11 +419,11 @@ class Game():
                 else:
                     consecutive_collisions = 0
 
-                player1.update(key, events)
-                player2.update(key, events)
+                player1.update(keys, events)
+                player2.update(keys, events)
 
-                player1.powerup_update(key, player2)
-                player2.powerup_update(key, player1)
+                player1.powerup_update(keys, player2)
+                player2.powerup_update(keys, player1)
 
                 # lives is changed in class function
                 player1_lose = player1.out_of_bounds()
@@ -493,28 +484,7 @@ class Game():
                     break
 
             # ------------- usual commands -------------
-            if key[pygame.K_ESCAPE]:
-                final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
-                pygame.quit()
-                sys.exit()
-
-            if key[pygame.K_EQUALS]:
-                if self.full_screen:
-                    final_screen = pygame.display.set_mode(self.WINDOW_SIZE)
-                    self.full_screen = False
-                else:
-                    final_screen = pygame.display.set_mode(self.WINDOW_SIZE, pygame.FULLSCREEN)
-                    self.full_screen = True
-
-            for event in events:
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-            final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
-
-            pygame.display.update()
-            self.clock.tick(FPS)
+            self.settings_after(events, keys, screen_key)
 
 def run_game():
     game = Game()

@@ -86,13 +86,13 @@ class Standard():
         self.powerup_top = image("playing/powerup_template/powerup_top.png")
 
         # powerup icon initialised in specific character class
-    def update(self, key, events):
+    def update(self, keys, events):
 
         if self.controller_type == "keyboard":
             # x and y movement
-            if key[self.controls["left"]]:
+            if keys[self.controls["left"]]:
                 self.dx -= self.acceleration
-            elif key[self.controls["right"]]:
+            elif keys[self.controls["right"]]:
                 self.dx += self.acceleration
             else:
                 temp_dx = self.dx - sgn(self.dx) * self.deceleration
@@ -101,9 +101,9 @@ class Standard():
                 else:
                     self.dx = temp_dx
 
-            if key[self.controls["up"]]:
+            if keys[self.controls["up"]]:
                 self.dy -= self.acceleration
-            elif key[self.controls["down"]]:
+            elif keys[self.controls["down"]]:
                 self.dy += self.acceleration
             else:
                 temp_dy = self.dy - sgn(self.dy) * self.deceleration
@@ -227,7 +227,7 @@ class Standard():
             self.powerup_state = "charging"
             self.powerup_charge = 0
 
-    def powerup_update(self, key, other_player):
+    def powerup_update(self, keys, other_player):
         if self.powerup_state == "charging":
             self.powerup_charge += self.powerup_charge_rate
 
@@ -238,7 +238,7 @@ class Standard():
             self.powerup_half_charge_rotate = pygame.transform.rotate(self.powerup_half_charge_rotate_org, self.powerup_charge)
             self.powerup_update_charge()
 
-        elif self.powerup_state == "ready" and key[self.controls["powerup"]]:
+        elif self.powerup_state == "ready" and keys[self.controls["powerup"]]:
             self.powerup_state = "in use"
             self.powerup_initialise()
 
@@ -434,8 +434,8 @@ class B79(Standard):
     #     self.change_interval = random.randint(10, 15)
     #     self.change_interval = random.randint(1, 2)
 
-    def update(self, key, events):
-        super().update(key, events)
+    def update(self, keys, events):
+        super().update(keys, events)
 
         if self.powerup_state != "in use":
             if self.change_timer.time_elapsed() > self.change_interval:

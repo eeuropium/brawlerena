@@ -1,4 +1,22 @@
-# testing a change again
+'''
+# key input detected WHEN released
+class PressKey():
+    def __init__(self, target_key):
+        self.press = False
+        self.target_key = target_key
+
+    def use_function(self, key):
+        if key[self.target_key]:
+            self.press = True
+        else:
+            if self.press:
+                # self.key_function()
+                self.press = False
+                return True
+
+        return False
+'''
+
 '''
 class Text():
     def __init__(self, text, font_name, colour, coordinates):

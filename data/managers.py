@@ -180,19 +180,19 @@ class Animation():
             return image
 
 # Input
-class PressKey():
-    def __init__(self, target_key):
-        self.press = False
-        self.target_key = target_key
 
-    def use_function(self, key):
-        if key[self.target_key]:
-            self.press = True
-        else:
-            if self.press:
-                # self.key_function()
-                self.press = False
-                return True
+class AdvancedKey():
+    def __init__(self, key):
+        self.key = key
+        self.pressed = False
+
+    def is_pressed(self, keys):
+        if keys[self.key] and not self.pressed:
+            self.pressed = True
+            return True
+
+        if not keys[self.key]:
+            self.pressed = False
 
         return False
 
