@@ -326,7 +326,7 @@ class GroundHog(Standard):
             self.dy = angle_move_y(angle, speed)
 
             self.radius = 5
-            self.mass = 1
+            self.mass = 0.7
 
             self.image = pygame.transform.rotate(image_, -angle)
             self.diameter = self.image.get_width()
