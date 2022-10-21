@@ -220,7 +220,7 @@ class ParticleCircle():
 
     # only for out of screen
     def should_remove(self):
-        return (self.collide or # collided with other player
+        return (self.radius < 0 or # collided with other player
                 self.x < -self.diameter or # checking for out of bounds
                 self.x > WIDTH + self.diameter or
                 self.y < -self.diameter or
@@ -229,7 +229,7 @@ class ParticleCircle():
     def display(self, screen):
         pygame.draw.circle(screen, self.colour, (self.x, self.y), self.radius)
 
-class ParticleImage():
+class ParticleImage(): # for attack weapons
     def __init__(self, x, y, angle, speed, radius, image):
         self.x = x
         self.y = y

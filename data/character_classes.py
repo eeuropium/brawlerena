@@ -183,8 +183,10 @@ class Standard():
         outline_surf.set_colorkey(BLACK)
 
         mask = pygame.mask.from_surface(self.image)
-
-        pygame.draw.lines(outline_surf, self.outline_colour, False, mask.outline(), 2)
+        try:
+            pygame.draw.lines(outline_surf, self.outline_colour, False, mask.outline(), 2)
+        except ValueError:
+            pass
 
         # displaying outline
         display_center(screen, outline_surf, (self.x, self.y))
