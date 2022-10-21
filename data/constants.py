@@ -4,11 +4,18 @@ import math
 import os
 import time
 import random
+import platform
 from pygame.locals import *
 
 pygame.init()
 
 fullscreen = True
+
+# OS -------------------------- #
+OS = platform.system()
+
+# values  -------------------------- #
+FPS = 30
 
 # coordinates -------------------------- #
 # 1280 720

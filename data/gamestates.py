@@ -5,7 +5,6 @@ from data.character_classes import *
 class Game():
     def __init__(self):
         pygame.init()
-        self.fps = 30
         self.clock = pygame.time.Clock()
 
         info = pygame.display.Info()
@@ -58,7 +57,7 @@ class Game():
             final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
 
             pygame.display.update()
-            self.clock.tick(self.fps)
+            self.clock.tick(FPS)
 
 
     def character_selection(self):
@@ -114,14 +113,17 @@ class Game():
 
             character_name_surf.display()
 
-            '''
-            if not character_ready[character_names[i]]:
-                card_mask = pygame.mask.from_surface(card_image)
-                final_card_mask = card_mask.to_surface(unsetcolor = (0, 0, 0, 0), setcolor = (255, 255, 255, 255))
-                # self.screen.blit(final_card_mask, (position_x, position_y))
-                display_center(selection_surface, final_card_mask, (position_x, position_y))
-            '''
-            
+            if OS == "Windows":
+                if not character_ready[character_names[i]]:
+                    # grey mask
+                    card_mask = pygame.mask.from_surface(card_image)
+                    card_mask = card_mask.to_surface(unsetcolor = (0, 0, 0, 0), setcolor = (82, 81, 89, 190))
+                    display_center(selection_surface, card_mask, (position_x, position_y))
+
+                    # text
+                    coming_soon_text = Text(selection_surface, "font_10", WHITE, (position_x, position_y - 28), "COMING SOON")
+                    coming_soon_text.display()
+
             position_x += spacing_x
 
 
@@ -298,7 +300,7 @@ class Game():
             final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
 
             pygame.display.update()
-            self.clock.tick(self.fps)
+            self.clock.tick(FPS)
 
         return character_names[character_index1], character_names[character_index2]
 
@@ -512,7 +514,7 @@ class Game():
             final_screen.blit(pygame.transform.scale(self.screen, self.WINDOW_SIZE), (0, 0))
 
             pygame.display.update()
-            self.clock.tick(self.fps)
+            self.clock.tick(FPS)
 
 def run_game():
     game = Game()
