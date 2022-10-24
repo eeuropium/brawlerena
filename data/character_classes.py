@@ -25,7 +25,7 @@ class Standard():
         self.controller_type = controller_type
 
         self.lives = 3
-        self.heart_image = image("playing/other/heart.png")
+        self.heart_image = get_image("playing/other/heart.png")
 
         if self.controller_type == "joystick":
             self.latest_x_event = 0
@@ -64,6 +64,9 @@ class Standard():
         self.x = self.org_x
         self.y = self.org_y
 
+        # particle effects
+        self.top_particles = []
+
         # power up section
         self.powerup_state = "charging"
         self.powerup_charge = 0 # how much the powerup is charged out of 360 (degrees)
@@ -74,19 +77,20 @@ class Standard():
         # powerup use time initialised in specific character class
         self.powerup_use_rate = 360 / (self.powerup_use_time * 30)
 
-        self.powerup_shade_left = image("playing/powerup_template/semi_left.png") # reflection over y axis
+        self.powerup_shade_left = get_image("playing/powerup_template/semi_left.png") # reflection over y axis
 
-        self.powerup_half_charge_right_org = image("playing/powerup_template/half_charge.png")
+        self.powerup_half_charge_right_org = get_image("playing/powerup_template/half_charge.png")
         self.powerup_half_charge_rotate_org = pygame.transform.flip(self.powerup_half_charge_right_org, 1, 0) # begins as left semicricle
 
         self.powerup_half_use_right_org = palette_swap(self.powerup_half_charge_right_org, (77, 155, 230), POWERUP_USE_COLOUR)
         self.powerup_half_use_rotate_org = palette_swap(self.powerup_half_charge_rotate_org, (77, 155, 230), POWERUP_USE_COLOUR)
 
-        self.powerup_base = image("playing/powerup_template/powerup_base.png")
-        self.powerup_top = image("playing/powerup_template/powerup_top.png")
+        self.powerup_base = get_image("playing/powerup_template/powerup_base.png")
+        self.powerup_top = get_image("playing/powerup_template/powerup_top.png")
 
         # powerup icon initialised in specific character class
     def update(self, keys, events):
+        # print(keys[self.controls["up"]], keys[self.controls["right"]], keys[self.controls["down"]], keys[self.controls["powerup"]])
 
         if self.controller_type == "keyboard":
             # x and y movement
@@ -174,6 +178,10 @@ class Standard():
         else:
             self.image = pygame.transform.rotate(self.org_image, self.angle + 180)
 
+        # updating particles
+        for particle in self.top_particles:
+            particle.update()
+
     def display(self, screen):
         # displaying character
         display_center(screen, self.image, (self.x, self.y))
@@ -190,6 +198,17 @@ class Standard():
 
         # displaying outline
         display_center(screen, outline_surf, (self.x, self.y))
+
+        remove = []
+
+        for particle in self.top_particles:
+            particle.display(screen)
+
+            if particle.should_remove():
+                remove.append(particle)
+
+        for particle in remove:
+            del particle
 
     def reset(self):
         self.powerup_reset()
@@ -289,8 +308,8 @@ class Standard():
 
 class GroundHog(Standard):
     def character_init(self):
-        self.org_image = image("playing/characters/GroundHog/character.png")
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.org_image = get_image("playing/characters/GroundHog/character.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 3
         self.powerup_use_time = 2
@@ -303,7 +322,7 @@ class GroundHog(Standard):
 
         self.circle_particle_group = []
 
-        spike_particle_var1 = image("playing/characters/GroundHog/spike_particle.png")
+        spike_particle_var1 = get_image("playing/characters/GroundHog/spike_particle.png")
 
         spike_particle_var2 = palette_swap(spike_particle_var1, (64, 57, 66), (103, 90, 112)) # dark colour
         spike_particle_var2 = palette_swap(spike_particle_var1, (98, 85, 101), (127, 112, 138)) # light colour
@@ -380,7 +399,7 @@ class GroundHog(Standard):
 class Blob(Standard):
     def character_init(self):
         self.idle_animation = Animation(4, 4, "playing/characters/Blob/", "character")
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 3
         self.powerup_use_time = 2
@@ -390,8 +409,8 @@ class Blob(Standard):
 
 class B79(Standard):
     def character_init(self):
-        self.org_image = image("playing/characters/B79/character.png")
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.org_image = get_image("playing/characters/B79/character.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 3
         self.powerup_use_time = 2
@@ -401,12 +420,12 @@ class B79(Standard):
         self.org_radius = 16
         self.powerup_radius = 32
 
-        self.different_images = [image(path + "battery.png"),
-                                 image(path + "happy.png"),
-                                 image(path + "lose.png"),
-                                 image(path + "character.png")]
+        self.different_images = [get_image(path + "battery.png"),
+                                 get_image(path + "happy.png"),
+                                 get_image(path + "lose.png"),
+                                 get_image(path + "character.png")]
 
-        self.powerup_image = image(path + "powerup.png")
+        self.powerup_image = get_image(path + "powerup.png")
 
 
         self.change_timer = Timer()
@@ -422,12 +441,12 @@ class B79(Standard):
     #     self.org_radius = 16
     #     self.powerup_radius = 32
     #
-    #     self.different_images = [image(path + "battery.png"),
-    #                              image(path + "happy.png"),
-    #                              image(path + "lose.png"),
-    #                              image(path + "neutral.png")]
+    #     self.different_images = [get_image(path + "battery.png"),
+    #                              get_image(path + "happy.png"),
+    #                              get_image(path + "lose.png"),
+    #                              get_image(path + "neutral.png")]
     #
-    #     self.powerup_image = image(path + "powerup.png")
+    #     self.powerup_image = get_image(path + "powerup.png")
     #
     #
     #     self.change_timer = Timer()
@@ -445,26 +464,26 @@ class B79(Standard):
 
 class Aurora(Standard):
     def character_init(self):
-        self.org_image = image("playing/characters/Aurora/character.png")
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.org_image = get_image("playing/characters/Aurora/character.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 3
         self.powerup_use_time = 2
 
 class Volta(Standard):
     def character_init(self):
-        self.org_image = image("playing/characters/Volta/character.png")
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.org_image = get_image("playing/characters/Volta/character.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 3
         self.powerup_use_time = 2
 
 class Jian(Standard):
     def character_init(self):
-        self.jian_image = image("playing/characters/Jian/character.png")
+        self.jian_image = get_image("playing/characters/Jian/character.png")
 
         self.org_image = self.jian_image # org_image is the rotated displayed image
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 5
         self.powerup_use_time = 5
@@ -472,7 +491,7 @@ class Jian(Standard):
         self.org_radius = 16
         self.powerup_radius = 37
 
-        self.powerup_image = image("playing/characters/Jian/powerup.png")
+        self.powerup_image = get_image("playing/characters/Jian/powerup.png")
 
     def out_of_bounds(self):
         arena_radius = HEIGHT // 2
@@ -499,8 +518,83 @@ class Jian(Standard):
 
 class Metor(Standard):
     def character_init(self):
-        self.org_image = image("playing/characters/Metor/character.png")
-        self.powerup_icon = image("playing/characters/GroundHog/icon.png")
+        self.org_image = get_image("playing/characters/Metor/character.png")
+        self.powerup_icon = get_image("playing/characters/GroundHog/icon.png")
 
         self.powerup_charge_time = 3
         self.powerup_use_time = 2
+
+class Farohar(Standard):
+    def character_init(self):
+        self.org_image = get_image("playing/characters/Farohar/character.png")
+        self.powerup_icon = get_image("playing/characters/Farohar/icon.png")
+
+        self.powerup_charge_time = 2
+        self.powerup_use_time = 0.1
+
+        self.dash_distance = 40
+
+        self.powerup_x_direction = 0
+        self.powerup_y_direction = 0
+
+    def update(self, keys, events):
+        super().update(keys, events)
+
+        if keys[self.controls["left"]]:
+            self.powerup_x_direction = -1
+        elif keys[self.controls["right"]]:
+            self.powerup_x_direction = 1
+        else:
+            self.powerup_x_direction = 0
+
+        if keys[self.controls["up"]]:
+            self.powerup_y_direction = -1
+        elif keys[self.controls["down"]]:
+            self.powerup_y_direction = 1
+        else:
+            self.powerup_y_direction = 0
+
+
+    def powerup_initialise(self):
+        for i in range(random.randint(30, 40)):
+            self.top_particles.append(ParticleCircle(self.x + random.randint(-5, 5), # x
+                                                     self.y + random.randint(-5, 5), # y
+                                                     random.randint(0, 360), # angle
+                                                     random.randint(1, 3), # speed
+                                                     random.randint(15, 20), # radius
+                                                     random.randint(1, 3), # decay rate
+                                                     random.choice([(235, 174, 52),
+                                                                    (255, 210, 120),
+                                                                    (176, 118, 4)])))
+
+        if self.powerup_x_direction == 0:
+            if self.angle == 90:
+                self.powerup_x_direction = -1
+            elif self.angle == -90 or self.angle == 270:
+                self.powerup_x_direction = 1
+
+        if self.powerup_y_direction == 0:
+            if self.angle == 0:
+                self.powerup_y_direction = -1
+            elif self.angle == 180 or self.angle == -180:
+                self.powerup_y_direction = 1
+
+        # normalizing vector to same magnitude
+        if self.powerup_x_direction != 0 and self.powerup_y_direction != 0:
+            self.x += self.powerup_x_direction * self.dash_distance / math.sqrt(2)
+            self.y += self.powerup_y_direction * self.dash_distance / math.sqrt(2)
+        else:
+            # one of this will be a 0
+            self.x += self.powerup_x_direction * self.dash_distance
+            self.y += self.powerup_y_direction * self.dash_distance
+
+        for i in range(random.randint(80, 90)):
+            self.top_particles.append(ParticleCircle(self.x + random.randint(-5, 5), # x
+                                                     self.y + random.randint(-5, 5), # y
+                                                     random.randint(0, 360), # angle
+                                                     random.randint(1, 3), # speed
+                                                     random.randint(15, 20), # radius
+                                                     random.randint(1, 3), # decay rate
+                                                     random.choice([(235, 174, 52),
+                                                                    (255, 210, 120),
+                                                                    (176, 118, 4)])))

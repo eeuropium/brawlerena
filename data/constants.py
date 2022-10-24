@@ -26,6 +26,32 @@ MID_X = WIDTH // 2
 MID_Y = HEIGHT // 2
 
 # specific positions / offsets -------------------------- #
+
+# character selection
+X_OFFSET = 10 # x value offset from the middle
+SPACING_X = 300 # spacing between characters
+SCROLL_SPEED = 15
+
+CIRCLE_SPACING = 20
+CIRCLE_RADIUS = 5
+
+BUTTON_OFFSET = 50
+BUTTON_SPACING = 65
+BUTTON_Y = 20
+BUTTON_HEIGHT = 18
+BUTTON_BORDER_RADIUS = 10
+
+USERNAME_Y = MID_Y - 50
+PASSWORD_Y = MID_Y
+
+HEADING_OFFSET = 20
+TITLE_Y = 70
+
+PLAYER_NAME_Y = 25
+
+INCORRECT_TEXT_Y = MID_Y + 50
+
+# fighting
 POWERUP_X = 50
 POWERUP_Y = MID_Y
 
@@ -52,8 +78,14 @@ WHITE = (255, 255, 255)
 BACKGROUND_COLOUR = (200, 255, 255)
 SILVER = (192, 203, 220)
 GREEN_SELECTED = (125, 255, 160)
+AUTHENTICATE_GREEN = (35, 144, 99) # RESURRECT
+YELLOW = (249, 194, 43) # RESURRECT
 
-PLAYER_BLUE = (77, 101, 180)
+INTERMEDIATE_COLORKEY = (255, 0, 242)
+
+MID_BLUE = (77, 156, 230) # RESURRECT
+
+PLAYER_BLUE = (77, 101, 180) # RESURRECT
 PLAYER_RED = (232, 59, 59)
 
 POWERUP_USE_COLOUR = (214, 0, 36)
@@ -61,5 +93,6 @@ POWERUP_READY_COLOUR = (0, 255, 238)
 
 
 # fonts -------------------------- #
-font_20 = pygame.font.Font("data/PressStart2P.ttf", 20)
-font_10 = pygame.font.Font("data/PressStart2P.ttf", 10)
+FONT_20 = pygame.font.Font("data/PressStart2P.ttf", 20)
+FONT_10 = pygame.font.Font("data/PressStart2P.ttf", 10)
+FONT_7 = pygame.font.Font("data/PressStart2P.ttf", 7)

@@ -2,6 +2,7 @@ from data.constants import *
 from data.managers import *
 from data.character_classes import *
 # cd Desktop/Programming/pygame/brawlerena/
+
 class Game():
     def __init__(self):
         pygame.init()
@@ -21,7 +22,7 @@ class Game():
 
         pygame.display.set_caption("brawlerena")
 
-        icon_image = image("playing/characters/B79/character.png")
+        icon_image = get_image("playing/characters/B79/character.png")
         pygame.display.set_icon(icon_image)
 
     def toggle_screen(self):
@@ -44,7 +45,8 @@ class Game():
         keys = pygame.key.get_pressed()
 
         # mouse input
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_pos = (mouse_x // 2, mouse_y // 2) # divide by 2 because 640 screen is scaled to 1280 which is twice the size
 
         return dt, events, keys, last_time, mouse_pos
 
@@ -81,112 +83,38 @@ class Game():
             # ------------- usual commands -------------
             self.settings_after(events, keys, screen_key)
 
+    def single_player_selection(self, key_left, key_right, key_up, key_select):
+        if not character_chosen_1:
+            if key_D.is_pressed(keys):
+                character_index1 += 1
+
+            if key_A.is_pressed(keys):
+                character_index1 -= 1
+
+        if key_E.is_pressed(keys):
+            character_chosen_1 = not character_chosen_1
 
     def character_selection(self):
         # common settings
         last_time = time.time()
         screen_key = AdvancedKey(pygame.K_EQUALS)
 
-        # getting character information
-        character_names = ["GroundHog", "B79", "Jian", "Volta", "Metor"]
-        character_images = [image("playing/characters/" + i + "/character.png") for i in character_names]
-        character_powerup_images = [image("playing/characters/" + i + "/icon.png") for i in character_names]
-        num_characters = len(character_names)
+        character_names = ["GroundHog", "Jian", "Farohar", "B79", "Volta", "Metor"]
 
         character_ready = {
             "GroundHog" : True,
             "B79": False,
             "Jian": True,
             "Volta": False,
-            "Metor": False
+            "Metor": False,
+            "Farohar": True,
         }
 
-        # definining images and constants
-        green_box_image = image("selection/other/green_box.png")
+        with open('data/player_data.json', 'r') as f:
+            player_data = json.load(f)
 
-        x_offset = 10 # x value offset from the middle
-
-        spacing_x = 300 # spacing between characters
-
-        left_mid_x = MID_X * 0.5 - x_offset # midline for left player self.screen
-        right_mid_x = MID_X * 1.5 + x_offset
-
-
-        # selection_surface rendering ---------------------------
-        selection_surface = pygame.Surface((spacing_x * (num_characters - 1) + MID_X, HEIGHT))
-
-        intermediate_colorkey = (255, 0, 242)
-        selection_surface.fill(intermediate_colorkey)
-
-        position_x = MID_X // 2
-        position_y = MID_Y
-
-
-        for i in range(num_characters):
-            card_image = image("selection/cards/card_" + character_names[i] + ".png")
-            # character_name_surf = Text(character_names[i], "font_10", SILVER, (position_x, position_y - 115))
-            character_name_surf = Text(selection_surface, "font_10", SILVER, (position_x, position_y - 115), character_names[i])
-
-            display_center(selection_surface, card_image, (position_x, position_y)) # card background
-            display_center(selection_surface, character_images[i], (position_x, position_y - 69)) # character image
-            display_center(selection_surface, character_powerup_images[i], (position_x - 48, position_y + 14)) # powerup icon
-
-            character_name_surf.display()
-
-            if OS == "Windows":
-                if not character_ready[character_names[i]]:
-                    # grey mask
-                    card_mask = pygame.mask.from_surface(card_image)
-                    card_mask = card_mask.to_surface(unsetcolor = (0, 0, 0, 0), setcolor = (82, 81, 89, 190))
-                    display_center(selection_surface, card_mask, (position_x, position_y))
-
-                    # text
-                    coming_soon_text = Text(selection_surface, "font_10", WHITE, (position_x, position_y - 28), "COMING SOON")
-                    coming_soon_text.display()
-
-            position_x += spacing_x
-
-
-        selection_surface.set_colorkey(intermediate_colorkey)
-        #-------------------------------------------------------
-
-
-        # circle_surface rendering---------------------------
-        circle_spacing = 20
-        circle_radius = 5
-
-        circle_surface = pygame.Surface((circle_spacing * (num_characters - 1) + circle_radius * 2, circle_radius * 2))
-        circle_surface.set_colorkey(BLACK)
-
-        position_x = circle_radius
-        position_y = circle_radius
-
-        for i in range(num_characters):
-            pygame.draw.circle(circle_surface, (148, 148, 148), (position_x, position_y), circle_radius)
-            position_x += circle_spacing
-        #-------------------------------------------------------
-
-        subsurf_x1 = 0
-        subsurf_target_x1 = 0
-
-        subsurf_x2 = 0
-        subsurf_target_x2 = 0
-
-        scroll_speed = 15
-
-        key_E = AdvancedKey(pygame.K_e)
-        key_D = AdvancedKey(pygame.K_d)
-        key_A = AdvancedKey(pygame.K_a)
-
-        key_slash = AdvancedKey(pygame.K_SLASH)
-        key_right = AdvancedKey(pygame.K_RIGHT)
-        key_left = AdvancedKey(pygame.K_LEFT)
-
-        character_index1 = 0 # character index for player 1
-        character_index2 = 0 # character index for player 2
-
-        character_chosen_1 = False
-        character_chosen_2 = False
+        player1 = PlayerSelection(1, self.screen, character_names, player_data)
+        player2 = PlayerSelection(2, self.screen, character_names, player_data)
 
         end_timer_started = False
 
@@ -196,32 +124,13 @@ class Game():
 
             # ------------- main code start -------------
 
-            # key handling for both players
+            # prevent taking inputs when other player is inputing username / password
+            if player2.navigation != "input":
+                player1.input_update(keys, events, mouse_pos)
+            if player1.navigation != "input":
+                player2.input_update(keys, events, mouse_pos)
 
-            if not character_chosen_1:
-                if key_D.is_pressed(keys):
-                    character_index1 += 1
-
-                if key_A.is_pressed(keys):
-                    character_index1 -= 1
-
-            if key_E.is_pressed(keys):
-                character_chosen_1 = not character_chosen_1
-
-            if not character_chosen_2:
-                if key_right.is_pressed(keys):
-                    character_index2 += 1
-
-                if key_left.is_pressed(keys):
-                    character_index2 -= 1
-
-            if key_slash.is_pressed(keys):
-                character_chosen_2 = not character_chosen_2
-
-            character_index1 %= num_characters
-            character_index2 %= num_characters
-
-            if character_chosen_1 and character_chosen_2:
+            if player1.character_chosen and player2.character_chosen:
                 # go to next gamestate if both players chose characters
                 if not end_timer_started:
                     end_timer = Timer()
@@ -231,78 +140,36 @@ class Game():
             if end_timer_started and end_timer.time_elapsed() > 1:
                 break
 
-            # updating target x positions for both players
-            subsurf_target_x1 = spacing_x * character_index1
-            subsurf_target_x2 = spacing_x * character_index2
-
-            # player 1 scrolling
-            if subsurf_x1 < subsurf_target_x1:
-                subsurf_x1 += scroll_speed
-                subsurf_x1 = min(subsurf_x1, subsurf_target_x1)
-
-            if subsurf_x1 > subsurf_target_x1:
-                subsurf_x1 -= scroll_speed
-                subsurf_x1 = max(subsurf_x1, subsurf_target_x1)
-
-            # player 2 scrolling
-            if subsurf_x2 < subsurf_target_x2:
-                subsurf_x2 += scroll_speed
-                subsurf_x2 = min(subsurf_x2, subsurf_target_x2)
-
-            if subsurf_x2 > subsurf_target_x2:
-                subsurf_x2 -= scroll_speed
-                subsurf_x2 = max(subsurf_x2, subsurf_target_x2)
-
+            player1.scroll()
+            player2.scroll()
 
             # display section  -----------------------
+            player1.cards_display()
+            player2.cards_display()
 
-            # player 1 ------------------
+            player1.selection_circle_display()
+            player2.selection_circle_display()
 
-            if character_chosen_1:
-                pygame.draw.rect(self.screen, GREEN_SELECTED, (0, 0, MID_X, HEIGHT)) # green background
+            player1.button_display(mouse_pos)
+            player2.button_display(mouse_pos)
 
-            screen_subsurf_1 = selection_surface.subsurface(subsurf_x1, 0, 320, 360) # subsurface for player 1
-            display_center(self.screen, screen_subsurf_1, (left_mid_x, MID_Y))
+            player1.authentication_display()
+            player2.authentication_display()
 
-            if character_chosen_1:
-                display_center(self.screen, green_box_image, (left_mid_x, MID_Y - 69)) # green box
+            if player1.navigation == "input":
+                player2.waiting_display()
+            elif player2.navigation == "input":
+                player1.waiting_display()
 
-            # player 2 ------------------
-
-            if character_chosen_2:
-                pygame.draw.rect(self.screen, GREEN_SELECTED, (MID_X, 0, MID_X, HEIGHT))
-                display_center(self.screen, green_box_image, (right_mid_x, MID_Y - 69))
-
-            screen_subsurf_2 = selection_surface.subsurface(subsurf_x2, 0, 320, 360) # subsurface for player 2
-            display_center(self.screen, screen_subsurf_2, (right_mid_x, MID_Y))
-
-            if character_chosen_2:
-                display_center(self.screen, green_box_image, (right_mid_x, MID_Y - 69))
-            # copy of surface is made because it's hard to calculate position of yellow circle due to variable number of characters
-
-            # circle for player 1 ----------------------
-            circle_surface_copy = circle_surface.copy()
-
-            # yellow circle showing which selection the player is on
-            pygame.draw.circle(circle_surface_copy, (255, 237, 46), (circle_radius + circle_spacing * character_index1, circle_radius), circle_radius)
-
-            display_center(self.screen, circle_surface_copy, (left_mid_x, MID_Y + 150))
-
-            # circle for player 2 ----------------------
-            circle_surface_copy = circle_surface.copy()
-            # yellow circle showing which selection the player is on
-            pygame.draw.circle(circle_surface_copy, (255, 237, 46), (circle_radius + circle_spacing * character_index2, circle_radius), circle_radius)
-
-            display_center(self.screen, circle_surface_copy, (right_mid_x, MID_Y + 150))
-
-            pygame.draw.rect(self.screen, BLACK, (MID_X - x_offset, 0, 2 * x_offset, HEIGHT))
+            # black separator
+            pygame.draw.rect(self.screen, BLACK, (MID_X - X_OFFSET, 0, 2 * X_OFFSET, HEIGHT))
 
             # ------------- usual commands -------------
             self.settings_after(events, keys, screen_key)
 
-        return character_names[character_index1], character_names[character_index2]
+        return character_names[player1.character_index], character_names[player2.character_index], player1.username, player2.username
 
-    def fighting(self, character1, character2):
+    def fighting(self, character1, character2, username1, username2):
         # common settings
         last_time = time.time()
         screen_key = AdvancedKey(pygame.K_EQUALS)
@@ -316,12 +183,9 @@ class Game():
         player1 = eval(character1 + "(1, \"keyboard\")")
         player2 = eval(character2 + "(2, \"keyboard\")")
 
-
-        player_names = ["player 1", "player 2"]
-
         # player name texts
-        player1_name_text = Text(self.screen, "font_10", PLAYER_BLUE, (NAME_X, NAME_Y), player_names[0], display_method = "top_left")
-        player2_name_text = Text(self.screen, "font_10", PLAYER_RED, (WIDTH - NAME_X, NAME_Y), player_names[1], display_method = "top_right")
+        player1_name_text = Text(self.screen, "FONT_10", PLAYER_BLUE, (NAME_X, NAME_Y), username1, display_method = "top_left")
+        player2_name_text = Text(self.screen, "FONT_10", PLAYER_RED, (WIDTH - NAME_X, NAME_Y), username2, display_method = "top_right")
 
         consecutive_collisions = 0
         # variable to keep track of consecutive_collisions
@@ -434,17 +298,17 @@ class Game():
 
                     # assigning winning player
                     if player1_lose:
-                        winning_player = 2
+                        winning_username = username2
                     elif player2_lose:
-                        winning_player = 1
+                        winning_username = username1
 
                     # assigning winning player moving texts
                     if player1.lives <= 0 or player2.lives <= 0:
                         game_state = "match_over"
-                        match_over_text = MovingText(self.screen, "font_20", BLACK, (MID_X, MID_Y), f"{player_names[winning_player - 1]} VICTORIOUS!!")
+                        match_over_text = MovingText(self.screen, "FONT_20", BLACK, (MID_X, MID_Y), f"{winning_username} VICTORIOUS!!")
                     else:
                         game_state = "round_over"
-                        round_over_text = MovingText(self.screen, "font_20", BLACK, (MID_X, MID_Y), f"{player_names[winning_player - 1]} WINS!")
+                        round_over_text = MovingText(self.screen, "FONT_20", BLACK, (MID_X, MID_Y), f"{winning_username} WINS!")
                     # -1 to account for 0 index
 
 
@@ -490,5 +354,5 @@ def run_game():
     game = Game()
 
     while True:
-        character1, character2 = game.character_selection()
-        game.fighting(character1, character2)
+        character1, character2, username1, username2 = game.character_selection()
+        game.fighting(character1, character2, username1, username2)

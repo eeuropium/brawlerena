@@ -1,4 +1,222 @@
 '''
+
+    def character_selection(self):
+        # common settings
+        last_time = time.time()
+        screen_key = AdvancedKey(pygame.K_EQUALS)
+
+        # getting character information
+        character_names = ["GroundHog", "B79", "Jian", "Volta", "Metor"]
+        character_images = [get_image("playing/characters/" + i + "/character.png") for i in character_names]
+        character_powerup_images = [get_image("playing/characters/" + i + "/icon.png") for i in character_names]
+        num_characters = len(character_names)
+
+        character_ready = {
+            "GroundHog" : True,
+            "B79": False,
+            "Jian": True,
+            "Volta": False,
+            "Metor": False
+        }
+
+        # definining images and constants
+        green_box_image = get_image("selection/other/green_box.png")
+
+        X_OFFSET = 10 # x value offset from the middle
+
+        SPACING_X = 300 # spacing between characters
+
+        left_mid_x = MID_X * 0.5 - X_OFFSET # midline for left player self.screen
+        right_mid_x = MID_X * 1.5 + X_OFFSET
+
+        # selection_surface rendering ---------------------------
+        selection_surface = pygame.Surface((SPACING_X * (num_characters - 1) + MID_X, HEIGHT))
+
+        INTERMEDIATE_COLORKEY = (255, 0, 242)
+        selection_surface.fill(INTERMEDIATE_COLORKEY)
+
+        position_x = MID_X // 2
+        position_y = MID_Y
+
+        for i in range(num_characters):
+            card_image = get_image("selection/cards/card_" + character_names[i] + ".png")
+            character_name_surf = Text(selection_surface, "font_10", SILVER, (position_x, position_y - 115), character_names[i])
+
+            display_center(selection_surface, card_image, (position_x, position_y)) # card background
+            display_center(selection_surface, character_images[i], (position_x, position_y - 69)) # character image
+            display_center(selection_surface, character_powerup_images[i], (position_x - 48, position_y + 14)) # powerup icon
+
+            character_name_surf.display()
+
+            if OS == "Windows":
+                if not character_ready[character_names[i]]:
+                    # grey mask
+                    coming_soon_mask = pygame.mask.from_surface(card_image)
+                    coming_soon_mask = coming_soon_mask.to_surface(unsetcolor = (0, 0, 0, 0), setcolor = (82, 81, 89, 190))
+                    display_center(selection_surface, coming_soon_mask, (position_x, position_y))
+
+                    # text
+                    coming_soon_text = Text(selection_surface, "font_10", WHITE, (position_x, position_y - 28), "COMING SOON")
+                    coming_soon_text.display()
+
+            position_x += SPACING_X
+
+
+        selection_surface.set_colorkey(INTERMEDIATE_COLORKEY)
+        #-------------------------------------------------------
+
+
+        # circle_surface rendering---------------------------
+        circle_surface = pygame.Surface((CIRCLE_SPACING * (num_characters - 1) + CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 2))
+        circle_surface.set_colorkey(BLACK)
+
+        position_x = CIRCLE_RADIUS
+        position_y = CIRCLE_RADIUS
+
+        for i in range(num_characters):
+            pygame.draw.circle(circle_surface, (148, 148, 148), (position_x, position_y), CIRCLE_RADIUS)
+            position_x += CIRCLE_SPACING
+        #-------------------------------------------------------
+
+        subsurf_x1 = 0
+        subsurf_target_x1 = 0
+
+        subsurf_x2 = 0
+        subsurf_target_x2 = 0
+
+        SCROLL_SPEED = 15
+
+        key_E = AdvancedKey(pygame.K_e)
+        key_D = AdvancedKey(pygame.K_d)
+        key_A = AdvancedKey(pygame.K_a)
+
+        key_slash = AdvancedKey(pygame.K_SLASH)
+        key_right = AdvancedKey(pygame.K_RIGHT)
+        key_left = AdvancedKey(pygame.K_LEFT)
+
+        character_index1 = 0 # character index for player 1
+        character_index2 = 0 # character index for player 2
+
+        character_chosen_1 = False
+        character_chosen_2 = False
+
+        end_timer_started = False
+
+        while True:
+            # ------------- usual commands -------------
+            dt, events, keys, last_time, mouse_pos = self.settings_before(BACKGROUND_COLOUR, last_time)
+
+            # ------------- main code start -------------
+
+            # key handling for both players
+
+            if not character_chosen_1:
+                if key_D.is_pressed(keys):
+                    character_index1 += 1
+
+                if key_A.is_pressed(keys):
+                    character_index1 -= 1
+
+            if key_E.is_pressed(keys):
+                character_chosen_1 = not character_chosen_1
+
+            if not character_chosen_2:
+                if key_right.is_pressed(keys):
+                    character_index2 += 1
+
+                if key_left.is_pressed(keys):
+                    character_index2 -= 1
+
+            if key_slash.is_pressed(keys):
+                character_chosen_2 = not character_chosen_2
+
+            character_index1 %= num_characters
+            character_index2 %= num_characters
+
+            if character_chosen_1 and character_chosen_2:
+                # go to next gamestate if both players chose characters
+                if not end_timer_started:
+                    end_timer = Timer()
+                    end_timer_started = True
+
+            # for waiting one second after both players chose character
+            if end_timer_started and end_timer.time_elapsed() > 1:
+                break
+
+            # updating target x positions for both players
+            subsurf_target_x1 = SPACING_X * character_index1
+            subsurf_target_x2 = SPACING_X * character_index2
+
+            # player 1 scrolling
+            if subsurf_x1 < subsurf_target_x1:
+                subsurf_x1 += SCROLL_SPEED
+                subsurf_x1 = min(subsurf_x1, subsurf_target_x1)
+
+            if subsurf_x1 > subsurf_target_x1:
+                subsurf_x1 -= SCROLL_SPEED
+                subsurf_x1 = max(subsurf_x1, subsurf_target_x1)
+
+            # player 2 scrolling
+            if subsurf_x2 < subsurf_target_x2:
+                subsurf_x2 += SCROLL_SPEED
+                subsurf_x2 = min(subsurf_x2, subsurf_target_x2)
+
+            if subsurf_x2 > subsurf_target_x2:
+                subsurf_x2 -= SCROLL_SPEED
+                subsurf_x2 = max(subsurf_x2, subsurf_target_x2)
+
+
+            # display section  -----------------------
+
+            # player 1 ------------------
+
+            if character_chosen_1:
+                pygame.draw.rect(self.screen, GREEN_SELECTED, (0, 0, MID_X, HEIGHT)) # green background
+
+            screen_subsurf_1 = selection_surface.subsurface(subsurf_x1, 0, 320, 360) # subsurface for player 1
+            display_center(self.screen, screen_subsurf_1, (left_mid_x, MID_Y))
+
+            if character_chosen_1:
+                display_center(self.screen, green_box_image, (left_mid_x, MID_Y - 69)) # green box
+
+            # player 2 ------------------
+
+            if character_chosen_2:
+                pygame.draw.rect(self.screen, GREEN_SELECTED, (MID_X, 0, MID_X, HEIGHT))
+
+            screen_subsurf_2 = selection_surface.subsurface(subsurf_x2, 0, 320, 360) # subsurface for player 2
+            display_center(self.screen, screen_subsurf_2, (right_mid_x, MID_Y))
+
+            if character_chosen_2:
+                display_center(self.screen, green_box_image, (right_mid_x, MID_Y - 69))
+            # copy of surface is made because it's hard to calculate position of yellow circle due to variable number of characters
+
+            # circle for player 1 ----------------------
+            circle_surface_copy = circle_surface.copy()
+
+            # yellow circle showing which selection the player is on
+            pygame.draw.circle(circle_surface_copy, (255, 237, 46), (CIRCLE_RADIUS + CIRCLE_SPACING * character_index1, CIRCLE_RADIUS), CIRCLE_RADIUS)
+
+            display_center(self.screen, circle_surface_copy, (left_mid_x, MID_Y + 150))
+
+            # circle for player 2 ----------------------
+            circle_surface_copy = circle_surface.copy()
+            # yellow circle showing which selection the player is on
+            pygame.draw.circle(circle_surface_copy, (255, 237, 46), (CIRCLE_RADIUS + CIRCLE_SPACING * character_index2, CIRCLE_RADIUS), CIRCLE_RADIUS)
+
+            display_center(self.screen, circle_surface_copy, (right_mid_x, MID_Y + 150))
+
+            # black separator
+            pygame.draw.rect(self.screen, BLACK, (MID_X - X_OFFSET, 0, 2 * X_OFFSET, HEIGHT))
+
+            # ------------- usual commands -------------
+            self.settings_after(events, keys, screen_key)
+
+        return character_names[character_index1], character_names[character_index2]
+
+'''
+
+'''
 # key input detected WHEN released
 class PressKey():
     def __init__(self, target_key):

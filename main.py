@@ -5,8 +5,9 @@ if __name__ == "__main__":
 
 
 '''
-version 1.1.2
+version 1.1.3
 
 changes:
     - replaced key function with new "orbing lights" key function
+    - reorganised code for character selection for easier adding of functionalities in the future
 '''

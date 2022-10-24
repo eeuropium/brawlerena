@@ -19,6 +19,17 @@ def display_center(screen, surf, coordinates, special_flags = ""): # surf is usu
     else:
         screen.blit(surf, surf_rect)
 
+def center_draw_rect(screen, colour, rect, border_radius = 0):
+    x, y, width, height = rect
+
+    new_rect = pygame.Rect(0, 0, width, height)
+    new_rect.center = (x, y)
+
+    if border_radius == 0:
+        pygame.draw.rect(screen, colour, new_rect)
+    else:
+        pygame.draw.rect(screen, colour, new_rect, border_radius = border_radius) # the argument "border radius" passed in
+
 def circle_surf(radius, colour):
     surf = pygame.Surface((radius * 2, radius * 2))
     pygame.draw.circle(surf, colour, (radius, radius), radius)
@@ -60,7 +71,7 @@ def display_font_center(screen, text, font_name, colour, coordinates):
         # recommended line break value font_size timesvalue between 1.4 to 1.8
 
 # upload
-def image(path):
+def get_image(path):
     return pygame.image.load("data/images/" + path)
 
 
