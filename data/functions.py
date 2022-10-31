@@ -109,3 +109,18 @@ def palette_swap(org_image, old_colour, new_colour):
     final_surf.set_colorkey((0, 0, 0))
 
     return final_surf
+
+# encryption
+def encode(message):
+    encoded_message = ""
+    for i in message:
+        encoded_message += chr(ord(i) - 5)
+
+    return encoded_message
+
+def decode(message):
+    decoded_message = ""
+    for i in message:
+        decoded_message += chr(ord(i) + 5)
+
+    return decoded_message

@@ -99,7 +99,8 @@ class Game():
         last_time = time.time()
         screen_key = AdvancedKey(pygame.K_EQUALS)
 
-        character_names = ["GroundHog", "Jian", "Farohar", "B79", "Volta", "Metor"]
+        character_names = ["GroundHog", "Jian", "Farohar"]
+        # character_names = ["GroundHog", "Jian", "Farohar", "B79", "Volta", "Metor"]
 
         character_ready = {
             "GroundHog" : True,
@@ -345,6 +346,14 @@ class Game():
                 match_over_text.display()
 
                 if match_over_text.is_finished():
+                    with open('data/player_data.json', 'r') as f:
+                        player_data = json.load(f)
+
+                    player_data[winning_username]["coins"] += WIN_COINS
+
+                    with open('data/player_data.json', 'w') as f:
+                        json.dump(player_data, f, indent = 4)
+
                     break
 
             # ------------- usual commands -------------

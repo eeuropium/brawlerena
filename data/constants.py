@@ -16,6 +16,7 @@ OS = platform.system()
 
 # values  -------------------------- #
 FPS = 30
+WIN_COINS = 10
 
 # coordinates -------------------------- #
 # 1280 720
@@ -42,7 +43,11 @@ BUTTON_HEIGHT = 18
 BUTTON_BORDER_RADIUS = 10
 
 USERNAME_Y = MID_Y - 50
-PASSWORD_Y = MID_Y
+PASSWORD_Y = MID_Y + 5
+
+MAX_LEN = 14
+
+WHITE_BOX_WIDTH = 120
 
 HEADING_OFFSET = 20
 TITLE_Y = 70
@@ -64,6 +69,8 @@ NAME_Y = 50
 
 START_POSITION_X_OFFSET = 50
 
+# specific positions / offsets -------------------------- #
+
 # colours -------------------------- #
 '''
 Palletes:
@@ -83,6 +90,7 @@ YELLOW = (249, 194, 43) # RESURRECT
 
 INTERMEDIATE_COLORKEY = (255, 0, 242)
 
+COIN_PURPLE = (156, 132, 243)
 MID_BLUE = (77, 156, 230) # RESURRECT
 
 PLAYER_BLUE = (77, 101, 180) # RESURRECT
@@ -95,4 +103,4 @@ POWERUP_READY_COLOUR = (0, 255, 238)
 # fonts -------------------------- #
 FONT_20 = pygame.font.Font("data/PressStart2P.ttf", 20)
 FONT_10 = pygame.font.Font("data/PressStart2P.ttf", 10)
-FONT_7 = pygame.font.Font("data/PressStart2P.ttf", 7)
+FONT_8 = pygame.font.Font("data/PressStart2P.ttf", 8)

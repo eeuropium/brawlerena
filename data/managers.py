@@ -1,5 +1,6 @@
 from data.constants import *
 from data.functions import *
+from data.character_data import *
 import json
 
 # Texts
@@ -294,7 +295,6 @@ class Animation():
             return image
 
 # Input
-
 class AdvancedKey():
     def __init__(self, key):
         self.key = key
@@ -376,12 +376,13 @@ class ParticleImage(): # for attack weapons
 class PlayerSelection():
     def __init__(self, player_number, screen, character_names, player_data):
         self.screen = screen
-        self.num_characters = len(character_names)
+        self.num_characters = len(all_character_data)
         self.player_data = player_data
 
         self.selection_surface = self.generate_selection_surface(character_names)
         self.circle_surface = self.generate_circle_surface()
         self.green_box_image = get_image("selection/other/green_box.png")
+        self.coin_image = get_image("selection/other/coin.png")
 
         self.subsurf_x = 0
         self.subsurf_target_x = 0
@@ -427,7 +428,7 @@ class PlayerSelection():
             self.username = "GUEST 2"
 
         self.login_button = Button(
-                            Text(self.screen, "FONT_7", BLACK, (self.MID_X + BUTTON_OFFSET, BUTTON_Y), "log in"),
+                            Text(self.screen, "FONT_8", BLACK, (self.MID_X + BUTTON_OFFSET, BUTTON_Y), "log in"),
                             (self.MID_X + BUTTON_OFFSET, BUTTON_Y, 56, BUTTON_HEIGHT),
                             [PLAYER_BLUE, MID_BLUE],
                             responsiveness = 1,
@@ -435,7 +436,7 @@ class PlayerSelection():
                             )
 
         self.signup_button = Button(
-                            Text(self.screen, "FONT_7", BLACK, (self.MID_X + BUTTON_OFFSET + BUTTON_SPACING, BUTTON_Y), "sign up"),
+                            Text(self.screen, "FONT_8", BLACK, (self.MID_X + BUTTON_OFFSET + BUTTON_SPACING, BUTTON_Y), "sign up"),
                             (self.MID_X + BUTTON_OFFSET + BUTTON_SPACING, BUTTON_Y, 62, BUTTON_HEIGHT),
                             [PLAYER_BLUE, MID_BLUE],
                             responsiveness = 1,
@@ -473,23 +474,23 @@ class PlayerSelection():
         self.username_string = ""
         self.password_string = ""
 
-        self.username_text = Text(self.screen, "FONT_7", BLACK, (self.MID_X, USERNAME_Y), self.username_string)
-        self.password_text = Text(self.screen, "FONT_7", BLACK, (self.MID_X, PASSWORD_Y), self.password_string)
+        self.username_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X, USERNAME_Y), self.username_string)
+        self.password_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X, PASSWORD_Y), self.password_string)
 
-        self.username_heading = Text(self.screen, "FONT_7", SILVER, (self.MID_X, USERNAME_Y - HEADING_OFFSET), "USERNAME:")
-        self.password_heading = Text(self.screen, "FONT_7", SILVER, (self.MID_X, PASSWORD_Y - HEADING_OFFSET), "PASSWORD:")
+        self.username_heading = Text(self.screen, "FONT_8", SILVER, (self.MID_X, USERNAME_Y - HEADING_OFFSET), "USERNAME:")
+        self.password_heading = Text(self.screen, "FONT_8", SILVER, (self.MID_X, PASSWORD_Y - HEADING_OFFSET), "PASSWORD:")
 
         self.logged_in = False
 
         self.INCORRECT_DISPLAY_TIME = 3.3
 
-        self.incorrect_username_text = FadeText(self.screen, "FONT_7", PLAYER_RED, (self.MID_X, INCORRECT_TEXT_Y), "Username not found.\nPlease try again.", self.INCORRECT_DISPLAY_TIME)
-        self.incorrect_password_text = FadeText(self.screen, "FONT_7", PLAYER_RED, (self.MID_X, INCORRECT_TEXT_Y), "Incorrect password.\nPlease try again.", self.INCORRECT_DISPLAY_TIME)
+        self.incorrect_username_text = FadeText(self.screen, "FONT_8", PLAYER_RED, (self.MID_X, INCORRECT_TEXT_Y), "Username not found.\nPlease try again.", self.INCORRECT_DISPLAY_TIME)
+        self.incorrect_password_text = FadeText(self.screen, "FONT_8", PLAYER_RED, (self.MID_X, INCORRECT_TEXT_Y), "Incorrect password.\nPlease try again.", self.INCORRECT_DISPLAY_TIME)
 
-        self.correct_username_text = FadeText(self.screen, "FONT_7", AUTHENTICATE_GREEN, (self.MID_X, INCORRECT_TEXT_Y), "User found!", self.INCORRECT_DISPLAY_TIME)
+        self.correct_username_text = FadeText(self.screen, "FONT_8", AUTHENTICATE_GREEN, (self.MID_X, INCORRECT_TEXT_Y), "User found!", self.INCORRECT_DISPLAY_TIME)
         self.correct_password_text = FadeText(self.screen, "FONT_10", AUTHENTICATE_GREEN, (self.MID_X, 100), "Log in\nsuccessful!", self.INCORRECT_DISPLAY_TIME)
 
-        self.account_exists_text = FadeText(self.screen, "FONT_7", PLAYER_RED, (self.MID_X, INCORRECT_TEXT_Y), "Account\nalready exists!", self.INCORRECT_DISPLAY_TIME)
+        self.account_exists_text = FadeText(self.screen, "FONT_8", PLAYER_RED, (self.MID_X, INCORRECT_TEXT_Y), "Account\nalready exists!", self.INCORRECT_DISPLAY_TIME)
         self.signin_text = FadeText(self.screen, "FONT_10", AUTHENTICATE_GREEN, (self.MID_X, 100), "Account\ncreated!", self.INCORRECT_DISPLAY_TIME)
 
         # text which shows waiting for other player to key in username / password
@@ -509,39 +510,46 @@ class PlayerSelection():
         self.on_x_button = False
 
     def generate_selection_surface(self, character_names):
-        character_images = [get_image("playing/characters/" + i + "/character.png") for i in character_names]
-        character_powerup_images = [get_image("playing/characters/" + i + "/icon.png") for i in character_names]
+        card_image = get_image("selection/cards/card.png")
 
         selection_surface = pygame.Surface((SPACING_X * (self.num_characters - 1) + MID_X, HEIGHT))
-
         selection_surface.fill(INTERMEDIATE_COLORKEY)
 
         position_x = MID_X // 2
         position_y = MID_Y
 
-        for i in range(self.num_characters):
-            card_image = get_image("selection/cards/card_" + character_names[i] + ".png")
-            character_name_surf = Text(selection_surface, "FONT_10", SILVER, (position_x, position_y - 115), character_names[i])
+        for character_name, character_data in all_character_data.items():
+            if character_data["status"] != "development":
+                # images
+                character_image = get_image("playing/characters/" + character_name + "/character.png")
+                character_powerup_image = get_image("playing/characters/" + character_name + "/icon.png")
 
-            display_center(selection_surface, card_image, (position_x, position_y)) # card background
-            display_center(selection_surface, character_images[i], (position_x, position_y - 69)) # character image
-            display_center(selection_surface, character_powerup_images[i], (position_x - 48, position_y + 14)) # powerup icon
+                display_center(selection_surface, card_image, (position_x, position_y)) # card background
+                display_center(selection_surface, character_image, (position_x, position_y - 69)) # character image
+                display_center(selection_surface, character_powerup_image, (position_x - 48, position_y + 14)) # powerup icon
 
-            character_name_surf.display()
+                # texts
+                character_name_surf = Text(selection_surface, "FONT_10", SILVER, (position_x, position_y - 115), character_name)
+                character_powerup_title = Text(selection_surface, "FONT_8", BLACK, (position_x + 24, position_y + 14), character_data["powerup_title"])
+                character_powerup_description = Text(selection_surface, "FONT_8", BLACK, (position_x, position_y + 77), character_data["powerup_description"])
 
-            if OS == "Windows":
-                if not character_ready[character_names[i]]:
-                    # grey mask
-                    coming_soon_mask = pygame.mask.from_surface(card_image)
-                    coming_soon_mask = coming_soon_mask.to_surface(unsetcolor = (0, 0, 0, 0), setcolor = (82, 81, 89, 190))
-                    display_center(selection_surface, coming_soon_mask, (position_x, position_y))
+                character_name_surf.display()
+                character_powerup_title.display()
+                character_powerup_description.display()
 
-                    # text
-                    coming_soon_text = Text(selection_surface, "font_10", WHITE, (position_x, position_y - 28), "COMING SOON")
-                    coming_soon_text.display()
+                # increasing x position
+                position_x += SPACING_X
 
-            position_x += SPACING_X
-
+            # if OS == "Windows":
+            #     if not character_ready[current_character]:
+            #         # grey mask
+            #         coming_soon_mask = pygame.mask.from_surface(card_image)
+            #         coming_soon_mask = coming_soon_mask.to_surface(unsetcolor = (0, 0, 0, 0), setcolor = (82, 81, 89, 190))
+            #         display_center(selection_surface, coming_soon_mask, (position_x, position_y))
+            #
+            #         # text
+            #         coming_soon_text = Text(selection_surface, "FONT_10", WHITE, (position_x, position_y - 28), "COMING SOON")
+            #         coming_soon_text.display()
 
         selection_surface.set_colorkey(INTERMEDIATE_COLORKEY)
 
@@ -623,12 +631,12 @@ class PlayerSelection():
                         self.username_string = self.username_string[:-1]
 
                     for event in events:
-                        if event.type == pygame.KEYDOWN:
+                        if len(self.username_string) < MAX_LEN and event.type == pygame.KEYDOWN:
                             self.username_string += event.unicode
 
             elif self.state == "login, password":
                 if self.controls["enter"].is_pressed(keys):
-                    if self.password_string == self.player_data[self.username_string]["password"]:
+                    if self.password_string == decode(self.player_data[self.username_string]["password"]):
                         self.correct_password_text.start_display()
 
                         self.state = "cards"
@@ -638,6 +646,9 @@ class PlayerSelection():
 
                         self.username = self.username_string # confirmed username
                         self.player_name_text = Text(self.screen, "FONT_10", WHITE, (self.MID_X, 25), self.username)
+                        self.coins_value = self.player_data[self.username]["coins"]
+                        self.coins_text = Text(self.screen, "FONT_10", BLACK, (self.MID_X + 120, PLAYER_NAME_Y - 6), str(self.coins_value), display_method = "top_right")
+
                     else:
                         self.incorrect_password_text.start_display()
                 else:
@@ -645,7 +656,7 @@ class PlayerSelection():
                         self.password_string = self.password_string[:-1]
 
                     for event in events:
-                        if event.type == pygame.KEYDOWN:
+                        if len(self.password_string) < MAX_LEN and event.type == pygame.KEYDOWN:
                             self.password_string += event.unicode
 
             elif self.state == "signup, username":
@@ -673,9 +684,12 @@ class PlayerSelection():
 
                     self.username = self.username_string # confirmed username
                     self.player_name_text = Text(self.screen, "FONT_10", WHITE, (self.MID_X, 25), self.username)
+                    self.coins_value = 0
+                    self.coins_text = Text(self.screen, "FONT_10", BLACK, (self.MID_X + 120, PLAYER_NAME_Y - 6), str(self.coins_value), display_method = "top_right")
 
-                    self.player_data[self.username] =  {"password": self.password_string,
-                                                        "games_played": 0}
+                    self.player_data[self.username] =  {"password": encode(self.password_string),
+                                                        "games_played": 0,
+                                                        "coins": 0}
 
                     with open('data/player_data.json', 'w') as f:
                         json.dump(self.player_data, f, indent = 4)
@@ -763,7 +777,6 @@ class PlayerSelection():
             self.login_button.display(mouse_pos)
             self.signup_button.display(mouse_pos)
 
-
     def authentication_display(self):
         if self.navigation == "input":
 
@@ -774,14 +787,14 @@ class PlayerSelection():
             self.username_heading.display()
 
             if self.state == "login, password": # green outline for correct username
-                center_draw_rect(self.screen, AUTHENTICATE_GREEN, (self.MID_X, USERNAME_Y, 104, 24), border_radius = 10)
+                center_draw_rect(self.screen, AUTHENTICATE_GREEN, (self.MID_X, USERNAME_Y, WHITE_BOX_WIDTH + 4, 24), border_radius = 10)
 
-            center_draw_rect(self.screen, WHITE, (self.MID_X, USERNAME_Y, 100, 20), border_radius = 10)
+            center_draw_rect(self.screen, WHITE, (self.MID_X, USERNAME_Y, WHITE_BOX_WIDTH, 20), border_radius = 10)
             self.username_text.display(self.username_string)
 
             # password part
             self.password_heading.display()
-            center_draw_rect(self.screen, WHITE, (self.MID_X, PASSWORD_Y, 100, 20), border_radius = 10)
+            center_draw_rect(self.screen, WHITE, (self.MID_X, PASSWORD_Y, WHITE_BOX_WIDTH, 20), border_radius = 10)
             self.password_text.display("*" * len(self.password_string))
 
             # title_rect
@@ -822,9 +835,19 @@ class PlayerSelection():
             pygame.draw.line(self.screen, WHITE, (self.center_x - cross_len, self.center_y - cross_len), (self.center_x + cross_len, self.center_y + cross_len), width = 5)
             pygame.draw.line(self.screen, WHITE, (self.center_x - cross_len, self.center_y + cross_len), (self.center_x + cross_len, self.center_y - cross_len), width = 5)
 
+
         elif self.logged_in:
+            # player title
+            center_draw_rect(self.screen, MID_BLUE, (self.MID_X, PLAYER_NAME_Y, 124, 24), border_radius = 10)
             center_draw_rect(self.screen, self.PLAYER_NAME_COLOUR, (self.MID_X, PLAYER_NAME_Y, 120, 20), border_radius = 10)
             self.player_name_text.display()
+
+
+            # display coin
+            center_draw_rect(self.screen, (107, 62, 117), (self.MID_X + 120, PLAYER_NAME_Y, 64, 29), border_radius = 10)
+            center_draw_rect(self.screen, COIN_PURPLE, (self.MID_X + 120, PLAYER_NAME_Y, 60, 25), border_radius = 10)
+            display_center(self.screen, self.coin_image, (self.MID_X + 135, PLAYER_NAME_Y - 1)) # coin image
+            self.coins_text.display(str(self.coins_value)) # coin text
 
             # correct handling - password found
             self.correct_password_text.display()
