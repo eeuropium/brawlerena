@@ -351,6 +351,9 @@ class Game():
 
                     player_data[winning_username]["coins"] += WIN_COINS
 
+                    player_data[username1]["games_played"] += 1
+                    player_data[username2]["games_played"] += 1
+
                     with open('data/player_data.json', 'w') as f:
                         json.dump(player_data, f, indent = 4)
 
