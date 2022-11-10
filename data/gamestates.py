@@ -201,7 +201,7 @@ class Game():
         '''
 
         # generating glow surface
-        # red_glow = glow_surf(10, 100, 4, (143, 0, 11), (38, 0, 3))
+        red_glow = glow_surf(10, 100, 20, (143, 0, 11), (38, 0, 3))
         # blue_glow = glow_surf(10, 100, 4, (69, 0, 62), (129, 3, 135))
         # glow_surf = pygame.Surface((120, 120))
         # display_center(glow_surf, circle_surf(60, (20, 20, 20)), (60, 60))
@@ -323,7 +323,7 @@ class Game():
             player1.display(self.screen)
             player2.display(self.screen)
 
-            #display_center(self.screen, red_glow, (player1.x, player1.y), special_flags = BLEND_RGB_ADD)
+            # display_center(self.screen, red_glow, (player1.x, player1.y), special_flags = BLEND_RGB_ADD)
             #display_center(self.screen, blue_glow, (player2.x, player2.y), special_flags = BLEND_RGB_ADD)
 
             player1.display_lives(self.screen)
