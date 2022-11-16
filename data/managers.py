@@ -408,6 +408,10 @@ class PlayerSelection():
 
             # default username
             self.username = "GUEST 1"
+
+            # key text / prompts
+            self.key_left_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), "A")
+            self.key_right_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), "D")
         else:
             # keys
             self.controls = {"left":  AdvancedKey(pygame.K_LEFT),
@@ -426,6 +430,10 @@ class PlayerSelection():
 
             # default username
             self.username = "GUEST 2"
+
+            # key text / prompts
+            self.key_left_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), "<")
+            self.key_right_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), ">")
 
         self.login_button = Button(
                             Text(self.screen, "FONT_8", BLACK, (self.MID_X + BUTTON_OFFSET, BUTTON_Y), "log in"),
@@ -495,6 +503,7 @@ class PlayerSelection():
 
         # text which shows waiting for other player to key in username / password
         self.waiting_text = Text(self.screen, "FONT_10", SILVER, (self.MID_X, MID_Y), "WAITING FOR\nOTHER\nPLAYER")
+        self.continue_text = Text(self.screen, "FONT_8", SILVER, (self.MID_X, MID_Y + 30), "Press Enter to continue")
 
         # colour (flashing colour)
         self.prev_flash_time = time.time()
@@ -777,6 +786,15 @@ class PlayerSelection():
             self.login_button.display(mouse_pos)
             self.signup_button.display(mouse_pos)
 
+        pygame.draw.circle(self.screen, self.PLAYER_NAME_COLOUR, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), 12)
+        pygame.draw.circle(self.screen, self.PLAYER_NAME_COLOUR, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), 12)
+
+        pygame.draw.circle(self.screen, SILVER, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), 10)
+        pygame.draw.circle(self.screen, SILVER, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), 10)
+
+        self.key_left_text.display()
+        self.key_right_text.display()
+
     def authentication_display(self):
         if self.navigation == "input":
 
@@ -823,6 +841,9 @@ class PlayerSelection():
 
             # correct handling - username found
             self.correct_username_text.display()
+
+            # enter to continue text
+            self.continue_text.display()
 
             # quit circle
             if not self.on_x_button:
