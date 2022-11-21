@@ -211,6 +211,10 @@ class Game():
         # display_center(glow_surf, circle_surf(20, (100, 100, 100)), (60, 60))
         # display_center(glow_surf, circle_surf(10, (120, 120, 120)), (60, 60))
 
+        # key prompts
+        self.prompt_powerup_left = Text(self.screen, "FONT_8", BLACK, (POWERUP_X, MID_Y + POWERUP_PROMPT_Y_OFFSET), "E")
+        self.prompt_powerup_right = Text(self.screen, "FONT_8", BLACK, (WIDTH - POWERUP_X, MID_Y + POWERUP_PROMPT_Y_OFFSET), "?")
+
         while True:
             # ------------- usual commands -------------
             dt, events, keys, last_time, mouse_pos = self.settings_before(BACKGROUND_COLOUR, last_time)
@@ -219,6 +223,17 @@ class Game():
 
             pygame.draw.circle(self.screen, (50, 90, 168), (MID_X, MID_Y), HEIGHT // 2 + 10) # inner circle
             pygame.draw.circle(self.screen, (142, 241, 250), (MID_X, MID_Y), HEIGHT // 2) # outer circle
+
+            # powerup prompts
+            # left player
+            pygame.draw.circle(self.screen, PLAYER_BLUE, (POWERUP_X, MID_Y + POWERUP_PROMPT_Y_OFFSET), 12)
+            pygame.draw.circle(self.screen, SILVER, (POWERUP_X, MID_Y + POWERUP_PROMPT_Y_OFFSET), 10)
+            self.prompt_powerup_left.display()
+
+            # right player
+            pygame.draw.circle(self.screen, PLAYER_RED, (WIDTH - POWERUP_X, MID_Y + POWERUP_PROMPT_Y_OFFSET), 12)
+            pygame.draw.circle(self.screen, SILVER, (WIDTH - POWERUP_X, MID_Y + POWERUP_PROMPT_Y_OFFSET), 10)
+            self.prompt_powerup_right.display()
 
 
             if game_state == "playing":

@@ -412,6 +412,8 @@ class PlayerSelection():
             # key text / prompts
             self.key_left_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), "A")
             self.key_right_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), "D")
+
+            self.key_selection_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X, MID_Y + SELECTION_KEY_Y_OFFSET), "Press  E  to select")
         else:
             # keys
             self.controls = {"left":  AdvancedKey(pygame.K_LEFT),
@@ -434,6 +436,8 @@ class PlayerSelection():
             # key text / prompts
             self.key_left_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), "<")
             self.key_right_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), ">")
+
+            self.key_selection_text = Text(self.screen, "FONT_8", BLACK, (self.MID_X, MID_Y + SELECTION_KEY_Y_OFFSET), "Press  ?  to select")
 
         self.login_button = Button(
                             Text(self.screen, "FONT_8", BLACK, (self.MID_X + BUTTON_OFFSET, BUTTON_Y), "log in"),
@@ -786,6 +790,7 @@ class PlayerSelection():
             self.login_button.display(mouse_pos)
             self.signup_button.display(mouse_pos)
 
+        # navigating key prompt displays
         pygame.draw.circle(self.screen, self.PLAYER_NAME_COLOUR, (self.MID_X + SELECTION_CIRCLE_X_OFFSET, MID_Y), 12)
         pygame.draw.circle(self.screen, self.PLAYER_NAME_COLOUR, (self.MID_X - SELECTION_CIRCLE_X_OFFSET, MID_Y), 12)
 
@@ -794,6 +799,11 @@ class PlayerSelection():
 
         self.key_left_text.display()
         self.key_right_text.display()
+
+        # selection character key prompt displays
+        pygame.draw.circle(self.screen, self.PLAYER_NAME_COLOUR, (self.MID_X - 17, MID_Y + SELECTION_KEY_Y_OFFSET), 12)
+        pygame.draw.circle(self.screen, SILVER, (self.MID_X - 17, MID_Y + SELECTION_KEY_Y_OFFSET), 10)
+        self.key_selection_text.display()
 
     def authentication_display(self):
         if self.navigation == "input":

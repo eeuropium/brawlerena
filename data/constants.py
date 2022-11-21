@@ -57,6 +57,7 @@ PLAYER_NAME_Y = 25
 INCORRECT_TEXT_Y = MID_Y + 50
 
 SELECTION_CIRCLE_X_OFFSET = 130
+SELECTION_KEY_Y_OFFSET = 168
 
 # fighting
 POWERUP_X = 50
@@ -70,6 +71,8 @@ NAME_X = 10
 NAME_Y = 50
 
 START_POSITION_X_OFFSET = 50
+
+POWERUP_PROMPT_Y_OFFSET = 50
 
 # specific positions / offsets -------------------------- #
 
