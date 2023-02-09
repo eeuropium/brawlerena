@@ -22,8 +22,13 @@ class Game():
 
         pygame.display.set_caption("brawlerena")
 
+        # set icon image
         icon_image = get_image("playing/characters/B79/character.png")
         pygame.display.set_icon(icon_image)
+
+        # background music
+        pygame.mixer.music.load("data/sounds/selection_music.mp3")
+        pygame.mixer.music.play(-1)
 
     def toggle_screen(self):
         if self.full_screen:

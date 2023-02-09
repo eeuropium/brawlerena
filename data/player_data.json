@@ -15,11 +15,11 @@
         "coins": 0
     },
     "GUEST 1": {
-        "games_played": 6,
-        "coins": 30
+        "games_played": 12,
+        "coins": 70
     },
     "GUEST 2": {
-        "games_played": 5,
-        "coins": 20
+        "games_played": 11,
+        "coins": 40
     }
 }

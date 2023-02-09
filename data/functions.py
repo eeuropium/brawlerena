@@ -52,7 +52,7 @@ def glow_surf(min_radius, max_radius, total_circles, in_colour, out_colour):
         curr_radius -= radius_interval
         curr_colour = tuple(out_colour[i] + colour_diff[i] * count / total_circles for i in range(3))
         display_center(surf, circle_surf(curr_radius, curr_colour), (max_radius, max_radius))
-        print(count, curr_radius, curr_colour)
+        # print(count, curr_radius, curr_colour)
 
     return surf
 

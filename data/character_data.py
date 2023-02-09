@@ -7,12 +7,12 @@ all_character_data = {
              "powerup_title": "Dome\nShield",
              "powerup_description": "Creates an\nenergy shield\naround itself"
     },
-    "Farohar": {"status": "locked",
+    "Farohar": {"status": "free",
                 "powerup_title": "Sand\nStorm",
-                "powerup_description": "Dahes forward\nand knocks opponent"
+                "powerup_description": "Dashes forward\nand knocks\nopponent"
     },
-    "B79": {"status": "development",
-            "powerup_title": "Energy\nOverload",
-            "powerup_description": "???"
-    }
+    # "B79": {"status": "unavailable",
+    #         "powerup_title": "Energy\nOverload",
+    #         "powerup_description": "???"
+    # }
 }
