@@ -1,4 +1,9 @@
 '''
+def get_Q8_password():
+    return "tronlegacy"
+'''
+
+'''
 
     def character_selection(self):
         # common settings
