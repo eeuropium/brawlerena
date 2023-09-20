@@ -12,3 +12,9 @@ Row 1: 00000000
 Row 2: 00111100
 
 ........
+
+# Running the Game
+
+You can run the game in terminal with the command "python3 main.py" after navigating to the directory.
+
+Just go to main.py
