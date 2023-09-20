@@ -1,7 +1,4 @@
-'''
-def get_Q8_password():
-    return "tronlegacy"
-'''
+
 
 '''
 
