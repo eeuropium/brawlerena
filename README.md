@@ -1,20 +1,11 @@
 # brawlerena
 
-We love Github. We love KL cup and we love binary.
+Brawlerena is a 2-player that is played on a single device. It is made with python and pygame.
 
-Hint 3 for Q5:
-A (scaled) 8 x 8 image. 8 x 8? Hmm ...
+There are multiple characters to choose from, each with unique special abilities. 
 
-The number 9: https://drive.google.com/file/d/14Kg5lABusEdIPzmjs7RT0jlR0p3M_Ayi/view?usp=drive_link
-
-Row 1: 00000000
-
-Row 2: 00111100
-
-........
+The goal of the game is to knock out the enemy player by collision. 
 
 # Running the Game
 
 You can run the game in terminal with the command "python3 main.py" after navigating to the directory.
-
-Just go to main.py
